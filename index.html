@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,16 +42,16 @@
 <div class="glass-panel rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
 <div class="text-center mb-8">
 <img src="logo.png" alt="Abu Jana App" class="h-24 mx-auto mb-3 rounded-lg">
-<h1 class="text-2xl font-bold text-gray-900">Abu Jana App</h1>
-<p class="text-gray-500 mt-1">Warehouse & Sales Management</p>
+<h1 class="text-2xl font-bold text-gray-900" data-i18n="app_name">Abu Jana App</h1>
+<p class="text-gray-500 mt-1" data-i18n="app_tagline">Warehouse & Sales Management</p>
 </div>
 <form id="loginForm" class="space-y-4">
 <div>
-<label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+<label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="email">Email</label>
 <input type="email" id="emailInput" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="you@company.com">
 </div>
 <div>
-<label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+<label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="password">Password</label>
 <div class="relative">
 <input type="password" id="passwordInput" required class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Enter password">
 <i class="fas fa-eye password-toggle" onclick="app.togglePassword('passwordInput', this)"></i>
@@ -59,13 +59,14 @@
 </div>
 <div id="loginError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
 <button type="submit" id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition shadow-lg">
-<i class="fas fa-sign-in-alt mr-2"></i> Sign In
+<i class="fas fa-sign-in-alt mr-2"></i> <span data-i18n="sign_in">Sign In</span>
 </button>
 </form>
 <div class="mt-5 flex items-center justify-between text-sm">
-<button onclick="app.showRegisterWarehouse()" class="text-blue-600 hover:underline"><i class="fas fa-plus mr-1"></i>Register a new warehouse</button>
-<button onclick="app.showSuperAdminLogin()" class="text-gray-400 hover:text-gray-600 hover:underline"><i class="fas fa-user-shield mr-1"></i>Super Admin</button>
+<button onclick="app.showRegisterWarehouse()" class="text-blue-600 hover:underline"><i class="fas fa-plus mr-1"></i><span data-i18n="register_new_warehouse">Register a new warehouse</span></button>
+<button onclick="app.showSuperAdminLogin()" class="text-gray-400 hover:text-gray-600 hover:underline"><i class="fas fa-user-shield mr-1"></i><span data-i18n="super_admin">Super Admin</span></button>
 </div>
+<div class="mt-4 text-center"><button onclick="setLanguage(currentLang==='ar'?'en':'ar')" class="text-xs text-gray-400 hover:text-gray-600 underline"><i class="fas fa-language mr-1"></i>EN / عربي</button></div>
 </div>
 </div>
 
@@ -74,24 +75,24 @@
 <div class="glass-panel rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
 <div class="text-center mb-8">
 <img src="logo.png" alt="Abu Jana App" class="h-24 mx-auto mb-3 rounded-lg">
-<h1 class="text-2xl font-bold text-gray-900">Register a New Warehouse</h1>
-<p class="text-gray-500 mt-1">Create your own independent warehouse account</p>
+<h1 class="text-2xl font-bold text-gray-900" data-i18n="register_warehouse_title">Register a New Warehouse</h1>
+<p class="text-gray-500 mt-1" data-i18n="register_warehouse_subtitle">Create your own independent warehouse account</p>
 </div>
 <form id="registerWarehouseForm" class="space-y-4">
 <div>
-<label class="block text-sm font-medium text-gray-700 mb-1">Warehouse Name</label>
+<label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="warehouse_name">Warehouse Name</label>
 <input type="text" id="rwWarehouseName" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Mosul Central Warehouse">
 </div>
 <div>
-<label class="block text-sm font-medium text-gray-700 mb-1">Your Full Name</label>
+<label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="your_full_name">Your Full Name</label>
 <input type="text" id="rwOwnerName" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Your name">
 </div>
 <div>
-<label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+<label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="email">Email</label>
 <input type="email" id="rwEmail" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="you@company.com">
 </div>
 <div>
-<label class="block text-sm font-medium text-gray-700 mb-1">Password (min 8 characters)</label>
+<label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="choose_password">Password (min 8 characters)</label>
 <div class="relative">
 <input type="password" id="rwPassword" minlength="8" required class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Choose a password">
 <i class="fas fa-eye password-toggle" onclick="app.togglePassword('rwPassword', this)"></i>
@@ -99,9 +100,9 @@
 </div>
 <div id="registerWarehouseError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
 <button type="submit" id="registerWarehouseBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition shadow-lg">
-<i class="fas fa-check mr-2"></i> Create Warehouse
+<i class="fas fa-check mr-2"></i> <span data-i18n="create_warehouse">Create Warehouse</span>
 </button>
-<button type="button" onclick="app.showLogin()" class="w-full text-center text-sm text-gray-500 hover:underline">Back to sign in</button>
+<button type="button" onclick="app.showLogin()" class="w-full text-center text-sm text-gray-500 hover:underline" data-i18n="back_to_sign_in">Back to sign in</button>
 </form>
 </div>
 </div>
@@ -111,16 +112,16 @@
 <div class="glass-panel rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
 <div class="text-center mb-8">
 <i class="fas fa-user-shield text-4xl text-gray-700 mb-3"></i>
-<h1 class="text-2xl font-bold text-gray-900">Super Admin</h1>
-<p class="text-gray-500 mt-1">Cross-warehouse management</p>
+<h1 class="text-2xl font-bold text-gray-900" data-i18n="super_admin_title">Super Admin</h1>
+<p class="text-gray-500 mt-1" data-i18n="super_admin_subtitle">Cross-warehouse management</p>
 </div>
 <form id="superAdminLoginForm" class="space-y-4">
 <div>
-<label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+<label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="email">Email</label>
 <input type="email" id="saEmailInput" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 outline-none">
 </div>
 <div>
-<label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+<label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="password">Password</label>
 <div class="relative">
 <input type="password" id="saPasswordInput" required class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 outline-none">
 <i class="fas fa-eye password-toggle" onclick="app.togglePassword('saPasswordInput', this)"></i>
@@ -128,9 +129,9 @@
 </div>
 <div id="superAdminLoginError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
 <button type="submit" id="superAdminLoginBtn" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 rounded-lg transition shadow-lg">
-<i class="fas fa-sign-in-alt mr-2"></i> Sign In
+<i class="fas fa-sign-in-alt mr-2"></i> <span data-i18n="sign_in">Sign In</span>
 </button>
-<button type="button" onclick="app.showLogin()" class="w-full text-center text-sm text-gray-500 hover:underline">Back to sign in</button>
+<button type="button" onclick="app.showLogin()" class="w-full text-center text-sm text-gray-500 hover:underline" data-i18n="back_to_sign_in">Back to sign in</button>
 </form>
 </div>
 </div>
@@ -140,9 +141,9 @@
 <header class="bg-gray-900 text-white px-8 py-4 flex items-center justify-between sticky top-0 z-10">
 <div class="flex items-center gap-3">
 <i class="fas fa-user-shield text-xl"></i>
-<h1 class="text-lg font-bold">Super Admin — All Warehouses</h1>
+<h1 class="text-lg font-bold" data-i18n="super_admin_title">Super Admin</h1>
 </div>
-<button onclick="app.superAdminLogout()" class="text-sm text-gray-300 hover:text-white"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+<div class="flex items-center gap-3"><button onclick="setLanguage(currentLang==='ar'?'en':'ar')" class="text-xs text-gray-300 hover:text-white underline"><i class="fas fa-language mr-1"></i>EN / عربي</button><button onclick="app.superAdminLogout()" class="text-sm text-gray-300 hover:text-white"><i class="fas fa-sign-out-alt mr-2"></i><span data-i18n="logout">Logout</span></button></div>
 </header>
 <div class="p-8" id="superAdminContent"></div>
 </div>
@@ -158,7 +159,7 @@
 </div>
 </div>
 <div class="px-4 pt-3">
-<div class="text-xs uppercase tracking-wide text-gray-400 font-semibold">Warehouse</div>
+<div class="text-xs uppercase tracking-wide text-gray-400 font-semibold" data-i18n="warehouse_label">Warehouse</div>
 <div class="text-sm font-medium text-gray-800 truncate" id="warehouseNameDisplay">—</div>
 </div>
 <nav class="flex-1 p-4 space-y-1 overflow-y-auto" id="sidebarNav"></nav>
@@ -172,11 +173,14 @@
 <p class="text-xs text-gray-500 truncate" id="userEmail">user@company.com</p>
 </div>
 </div>
+<button onclick="setLanguage(currentLang==='ar'?'en':'ar')" class="w-full mt-2 text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition">
+<i class="fas fa-language mr-2"></i> EN / عربي
+</button>
 <button onclick="app.openChangePassword()" class="w-full mt-2 text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition">
-<i class="fas fa-key mr-2"></i> Change Password
+<i class="fas fa-key mr-2"></i> <span data-i18n="change_password">Change Password</span>
 </button>
 <button onclick="app.logout()" class="w-full mt-1 text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition">
-<i class="fas fa-sign-out-alt mr-2"></i> Logout
+<i class="fas fa-sign-out-alt mr-2"></i> <span data-i18n="logout">Logout</span>
 </button>
 </div>
 </aside>
@@ -203,6 +207,7 @@
 <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" id="modalContent"></div>
 </div>
 
+<script src="i18n.js"></script>
 <script src="config.js"></script>
 <script src="app.js"></script>
 <script src="app-dashboard.js"></script>

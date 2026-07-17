@@ -118,8 +118,7 @@ class MSyncApp {
   showMainApp() {
     this.hideAllScreens();
     document.getElementById('mainApp').classList.remove('hidden');
-    document.getElementById('userRoleDisplay').textContent =
-      this.currentUser.role.charAt(0).toUpperCase() + this.currentUser.role.slice(1);
+    document.getElementById('userRoleDisplay').textContent = t('role_' + this.currentUser.role);
     document.getElementById('userName').textContent = this.currentUser.full_name;
     document.getElementById('userEmail').textContent = this.currentUser.email;
     document.getElementById('warehouseNameDisplay').textContent = this.currentUser.warehouse_name || '—';
@@ -138,21 +137,21 @@ class MSyncApp {
     const nav = document.getElementById('sidebarNav');
     const role = this.currentUser.role;
     const items = [
-      { id: 'dashboard', icon: 'fa-chart-line', label: 'Dashboard', roles: ['owner', 'admin', 'salesman'] },
-      { id: 'products', icon: 'fa-boxes', label: 'Products', roles: ['owner', 'admin', 'salesman'] },
-      { id: 'new-sale', icon: 'fa-cash-register', label: 'New Sale', roles: ['owner', 'admin', 'salesman'] },
-      { id: 'sales', icon: 'fa-receipt', label: 'Sales History', roles: ['owner', 'admin', 'salesman'] },
-      { id: 'targets', icon: 'fa-bullseye', label: 'Target vs Achieved', roles: ['owner', 'admin'] },
-      { id: 'reports', icon: 'fa-chart-pie', label: 'Reports', roles: ['owner', 'admin'] },
-      { id: 'customers', icon: 'fa-address-book', label: 'Customers', roles: ['owner', 'admin'] },
-      { id: 'coupons', icon: 'fa-tags', label: 'Discounts & Coupons', roles: ['owner', 'admin'] },
-      { id: 'credit', icon: 'fa-hand-holding-dollar', label: 'Credit', roles: ['owner', 'admin'] },
-      { id: 'suppliers', icon: 'fa-truck', label: 'Suppliers', roles: ['owner', 'admin'] },
-      { id: 'purchase-orders', icon: 'fa-dolly', label: 'Purchase Orders', roles: ['owner', 'admin'] },
-      { id: 'shops', icon: 'fa-store', label: 'Shops', roles: ['owner', 'admin'] },
-      { id: 'inventory', icon: 'fa-clipboard-list', label: 'Inventory Logs', roles: ['owner', 'admin'] },
-      { id: 'users', icon: 'fa-users', label: 'Team Management', roles: ['owner'] },
-      { id: 'audit', icon: 'fa-shield-alt', label: 'Audit Logs', roles: ['owner'] },
+      { id: 'dashboard', icon: 'fa-chart-line', label: t('nav_dashboard'), roles: ['owner', 'admin', 'salesman'] },
+      { id: 'products', icon: 'fa-boxes', label: t('nav_products'), roles: ['owner', 'admin', 'salesman'] },
+      { id: 'new-sale', icon: 'fa-cash-register', label: t('nav_new_sale'), roles: ['owner', 'admin', 'salesman'] },
+      { id: 'sales', icon: 'fa-receipt', label: t('nav_sales'), roles: ['owner', 'admin', 'salesman'] },
+      { id: 'targets', icon: 'fa-bullseye', label: t('nav_targets'), roles: ['owner', 'admin'] },
+      { id: 'reports', icon: 'fa-chart-pie', label: t('nav_reports'), roles: ['owner', 'admin'] },
+      { id: 'customers', icon: 'fa-address-book', label: t('nav_customers'), roles: ['owner', 'admin'] },
+      { id: 'coupons', icon: 'fa-tags', label: t('nav_coupons'), roles: ['owner', 'admin'] },
+      { id: 'credit', icon: 'fa-hand-holding-dollar', label: t('nav_credit'), roles: ['owner', 'admin'] },
+      { id: 'suppliers', icon: 'fa-truck', label: t('nav_suppliers'), roles: ['owner', 'admin'] },
+      { id: 'purchase-orders', icon: 'fa-dolly', label: t('nav_purchase_orders'), roles: ['owner', 'admin'] },
+      { id: 'shops', icon: 'fa-store', label: t('nav_shops'), roles: ['owner', 'admin'] },
+      { id: 'inventory', icon: 'fa-clipboard-list', label: t('nav_inventory'), roles: ['owner', 'admin'] },
+      { id: 'users', icon: 'fa-users', label: t('nav_users'), roles: ['owner'] },
+      { id: 'audit', icon: 'fa-shield-alt', label: t('nav_audit'), roles: ['owner'] },
     ];
     nav.innerHTML = items.filter(i => i.roles.includes(role)).map(item => `
       <button onclick="app.navigate('${item.id}')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 ${this.currentPage === item.id ? 'active' : 'text-gray-600'}">
@@ -167,21 +166,21 @@ class MSyncApp {
     this.currentPage = page;
     this.renderSidebar();
     const titles = {
-      'dashboard': ['Dashboard', 'Overview of sales and stock'],
-      'products': ['Products', 'Manage inventory and stock levels'],
-      'new-sale': ['New Sale', 'Create invoice and process order'],
-      'sales': ['Sales History', 'View and track all transactions'],
-      'targets': ['Target vs Achieved', 'Monthly SKU sales performance'],
-      'reports': ['Reports', 'Sales analytics, profit margins, and exports'],
-      'customers': ['Customers', 'Manage customers, order history, and credit'],
-      'coupons': ['Discounts & Coupons', 'Create and manage discount codes'],
-      'credit': ['Credit', 'Shops that owe money and payment tracking'],
-      'suppliers': ['Suppliers', 'Manage your suppliers'],
-      'purchase-orders': ['Purchase Orders', 'Order and restock inventory from suppliers'],
-      'shops': ['Shops', 'Manage shop locations and details'],
-      'inventory': ['Inventory Logs', 'Track all stock movements'],
-      'users': ['Team Management', 'Manage users and permissions'],
-      'audit': ['Audit Logs', 'System activity and security trail']
+      'dashboard': [t('nav_dashboard'), 'Overview of sales and stock'],
+      'products': [t('nav_products'), 'Manage inventory and stock levels'],
+      'new-sale': [t('nav_new_sale'), 'Create invoice and process order'],
+      'sales': [t('nav_sales'), 'View and track all transactions'],
+      'targets': [t('nav_targets'), 'Monthly SKU sales performance'],
+      'reports': [t('nav_reports'), 'Sales analytics, profit margins, and exports'],
+      'customers': [t('nav_customers'), 'Manage customers, order history, and credit'],
+      'coupons': [t('nav_coupons'), 'Create and manage discount codes'],
+      'credit': [t('nav_credit'), 'Shops that owe money and payment tracking'],
+      'suppliers': [t('nav_suppliers'), 'Manage your suppliers'],
+      'purchase-orders': [t('nav_purchase_orders'), 'Order and restock inventory from suppliers'],
+      'shops': [t('nav_shops'), 'Manage shop locations and details'],
+      'inventory': [t('nav_inventory'), 'Track all stock movements'],
+      'users': [t('nav_users'), 'Manage users and permissions'],
+      'audit': [t('nav_audit'), 'System activity and security trail']
     };
     document.getElementById('pageTitle').textContent = titles[page][0];
     document.getElementById('pageSubtitle').textContent = titles[page][1];
