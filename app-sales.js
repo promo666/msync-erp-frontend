@@ -14,46 +14,46 @@ MSyncApp.prototype.renderNewSale = async function () {
   <div class="fade-in grid grid-cols-1 lg:grid-cols-3 gap-6">
     <div class="lg:col-span-2 space-y-4">
       <div class="flex gap-2">
-        <input id="saleProductSearch" oninput="app.renderSaleProductList()" placeholder="Search products to add..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
-        <button onclick="app.scanToAddProduct()" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900"><i class="fas fa-barcode mr-2"></i>Scan</button>
+        <input id="saleProductSearch" oninput="app.renderSaleProductList()" placeholder="${t('search_products_to_add')}" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+        <button onclick="app.scanToAddProduct()" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900"><i class="fas fa-barcode mr-2"></i>${t('scan')}</button>
       </div>
       <div id="saleProductList" class="glass-panel rounded-xl shadow-sm divide-y max-h-[60vh] overflow-y-auto"></div>
     </div>
     <div class="glass-panel rounded-xl shadow-sm p-5 h-fit sticky top-24">
-      <h3 class="font-bold mb-3">Cart</h3>
+      <h3 class="font-bold mb-3">${t('cart')}</h3>
       <div id="cartItems" class="space-y-2 mb-4 max-h-64 overflow-y-auto"></div>
       <div class="flex gap-2 mb-2">
-        <input id="couponCode" placeholder="Coupon code" class="flex-1 px-3 py-2 border rounded-lg text-sm uppercase">
-        <button type="button" onclick="app.applyCoupon()" class="px-3 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200">Apply</button>
+        <input id="couponCode" placeholder="${t('coupon_code')}" class="flex-1 px-3 py-2 border rounded-lg text-sm uppercase">
+        <button type="button" onclick="app.applyCoupon()" class="px-3 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200">${t('apply')}</button>
       </div>
       <div id="couponStatus" class="text-xs mb-2"></div>
-      <div class="border-t pt-3 mb-1 flex justify-between text-sm text-gray-500"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
-      <div id="discountRow" class="hidden mb-1 flex justify-between text-sm text-green-600"><span>Discount</span><span id="cartDiscount">-$0.00</span></div>
-      <div class="pt-1 mb-4 flex justify-between font-bold"><span>Total</span><span id="cartTotal">$0.00</span></div>
-      <label class="block text-xs font-medium text-gray-500 mb-1">Shop (optional)</label>
+      <div class="border-t pt-3 mb-1 flex justify-between text-sm text-gray-500"><span>${t('subtotal')}</span><span id="cartSubtotal">$0.00</span></div>
+      <div id="discountRow" class="hidden mb-1 flex justify-between text-sm text-green-600"><span>${t('discount')}</span><span id="cartDiscount">-$0.00</span></div>
+      <div class="pt-1 mb-4 flex justify-between font-bold"><span>${t('total')}</span><span id="cartTotal">$0.00</span></div>
+      <label class="block text-xs font-medium text-gray-500 mb-1">${t('shop_optional')}</label>
       <div class="relative mb-3">
-        <input id="shopSearchBox" placeholder="Search by name, location, or phone..." autocomplete="off"
+        <input id="shopSearchBox" placeholder="${t('search_shop_placeholder')}" autocomplete="off"
                oninput="app.filterShopPickerList()" onfocus="app.filterShopPickerList()" onblur="app.hideShopPickerListSoon()"
                class="w-full px-3 py-2 border rounded-lg">
         <button type="button" onclick="app.clearShopSelection()" id="clearShopBtn" class="hidden absolute right-2 top-2 text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
         <div id="shopPickerList" class="hidden absolute z-10 bg-white border rounded-lg shadow-lg w-full max-h-48 overflow-y-auto mt-1"></div>
       </div>
-      <label class="block text-xs font-medium text-gray-500 mb-1">Registered Customer (optional)</label>
+      <label class="block text-xs font-medium text-gray-500 mb-1">${t('registered_customer_optional')}</label>
       <select id="saleCustomer" onchange="app.onSaleCustomerChange()" class="w-full px-3 py-2 border rounded-lg mb-3">
-        <option value="">— Walk-in / not registered —</option>
-        ${this.customers.map(c => `<option value="${c.id}">${this.esc(c.name)}${c.credit_balance > 0 ? ` (owes ${this.fmt(c.credit_balance)})` : ''}</option>`).join('')}
+        <option value="">${t('no_shop_selected')}</option>
+        ${this.customers.map(c => `<option value="${c.id}">${this.esc(c.name)}${c.credit_balance > 0 ? ` (${this.fmt(c.credit_balance)})` : ''}</option>`).join('')}
       </select>
-      <input id="customerName" placeholder="Customer name (optional)" class="w-full px-3 py-2 border rounded-lg mb-2">
-      <input id="customerPhone" placeholder="Customer phone (optional)" class="w-full px-3 py-2 border rounded-lg mb-3">
+      <input id="customerName" placeholder="${t('customer_name_optional')}" class="w-full px-3 py-2 border rounded-lg mb-2">
+      <input id="customerPhone" placeholder="${t('customer_phone_optional')}" class="w-full px-3 py-2 border rounded-lg mb-3">
       <div id="paymentMethodBox" class="hidden mb-3">
-        <label class="block text-xs font-medium text-gray-500 mb-1">Payment</label>
+        <label class="block text-xs font-medium text-gray-500 mb-1">${t('payment')}</label>
         <div class="flex gap-2">
-          <label class="flex-1 flex items-center justify-center gap-2 px-3 py-2 border rounded-lg cursor-pointer text-sm"><input type="radio" name="paymentMethod" value="cash" checked> Cash</label>
-          <label class="flex-1 flex items-center justify-center gap-2 px-3 py-2 border rounded-lg cursor-pointer text-sm"><input type="radio" name="paymentMethod" value="credit"> On Credit</label>
+          <label class="flex-1 flex items-center justify-center gap-2 px-3 py-2 border rounded-lg cursor-pointer text-sm"><input type="radio" name="paymentMethod" value="cash" checked> ${t('cash')}</label>
+          <label class="flex-1 flex items-center justify-center gap-2 px-3 py-2 border rounded-lg cursor-pointer text-sm"><input type="radio" name="paymentMethod" value="credit"> ${t('on_credit')}</label>
         </div>
       </div>
       <button onclick="app.checkout()" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700">
-        <i class="fas fa-check mr-2"></i>Complete Sale
+        <i class="fas fa-check mr-2"></i>${t('complete_sale')}
       </button>
     </div>
   </div>`;
@@ -69,11 +69,11 @@ MSyncApp.prototype.renderSaleProductList = function () {
     <div class="p-3 flex justify-between items-center hover:bg-gray-50">
       <div>
         <p class="font-medium text-sm">${this.esc(p.name)}</p>
-        <p class="text-xs text-gray-500">${this.esc(p.sku)} · ${this.fmt(p.unit_price)} · ${p.current_stock} in stock</p>
+        <p class="text-xs text-gray-500">${this.esc(p.sku)} · ${this.fmt(p.unit_price)} · ${p.current_stock} ${t('in_stock')}</p>
       </div>
-      <button onclick="app.addToCart('${p.id}')" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700">Add</button>
+      <button onclick="app.addToCart('${p.id}')" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700">${t('add')}</button>
     </div>`).join('');
-  document.getElementById('saleProductList').innerHTML = list || '<p class="p-6 text-center text-gray-400 text-sm">No products available</p>';
+  document.getElementById('saleProductList').innerHTML = list || `<p class="p-6 text-center text-gray-400 text-sm">${t('no_products_available')}</p>`;
 };
 
 // ---------- Searchable shop picker (replaces the old plain dropdown) ----------
@@ -81,7 +81,7 @@ MSyncApp.prototype.filterShopPickerList = function () {
   const q = document.getElementById('shopSearchBox').value.toLowerCase().trim();
   const list = document.getElementById('shopPickerList');
   const matches = this.shops.filter(s =>
-    !this.selectedShopId || s.id !== this.selectedShopId // once selected, typing again searches fresh
+    !this.selectedShopId || s.id !== this.selectedShopId
   ).filter(s =>
     !q ||
     s.name.toLowerCase().includes(q) ||
@@ -90,7 +90,7 @@ MSyncApp.prototype.filterShopPickerList = function () {
   ).slice(0, 20);
 
   if (matches.length === 0) {
-    list.innerHTML = `<div class="p-3 text-sm text-gray-400">No matching shops</div>`;
+    list.innerHTML = `<div class="p-3 text-sm text-gray-400">${t('no_products_found')}</div>`;
   } else {
     list.innerHTML = matches.map(s => `
       <button type="button" onmousedown="app.selectShopForSale('${s.id}')" class="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm border-b border-gray-50 last:border-0">
@@ -139,11 +139,11 @@ MSyncApp.prototype.scanToAddProduct = function () {
   this.openBarcodeScanner((code) => {
     const product = this.products.find(p => p.barcode && p.barcode === code);
     if (!product) {
-      this.showToast(`No product found with barcode ${code}`, 'warning');
+      this.showToast(`${t('no_products_found')}: ${code}`, 'warning');
       return;
     }
     this.addToCart(product.id);
-    this.showToast(`Added: ${product.name}`, 'success');
+    this.showToast(`${t('add')}: ${product.name}`, 'success');
   });
 };
 
@@ -161,7 +161,7 @@ MSyncApp.prototype.addToCart = function (productId) {
   const p = this.products.find(x => x.id === productId);
   const existing = this.cart.find(c => c.product_id === productId);
   const inCart = existing ? existing.quantity : 0;
-  if (inCart + 1 > p.current_stock) { this.showToast('Not enough stock available', 'warning'); return; }
+  if (inCart + 1 > p.current_stock) { this.showToast(t('not_enough_stock'), 'warning'); return; }
   if (existing) existing.quantity += 1;
   else this.cart.push({ product_id: productId, name: p.name, unit_price: p.unit_price, quantity: 1, max: p.current_stock });
   this.renderCart();
@@ -171,7 +171,7 @@ MSyncApp.prototype.updateCartQty = function (productId, qty) {
   const item = this.cart.find(c => c.product_id === productId);
   qty = parseInt(qty, 10);
   if (!qty || qty < 1) { this.cart = this.cart.filter(c => c.product_id !== productId); }
-  else if (qty > item.max) { this.showToast('Not enough stock available', 'warning'); item.quantity = item.max; }
+  else if (qty > item.max) { this.showToast(t('not_enough_stock'), 'warning'); item.quantity = item.max; }
   else { item.quantity = qty; }
   this.renderCart();
 };
@@ -179,11 +179,11 @@ MSyncApp.prototype.updateCartQty = function (productId, qty) {
 MSyncApp.prototype.renderCart = function () {
   const box = document.getElementById('cartItems');
   if (this.cart.length === 0) {
-    box.innerHTML = '<p class="text-sm text-gray-400 text-center py-4">Cart is empty</p>';
+    box.innerHTML = `<p class="text-sm text-gray-400 text-center py-4">${t('cart_empty')}</p>`;
   } else {
     box.innerHTML = this.cart.map(c => `
       <div class="flex items-center justify-between text-sm">
-        <div class="flex-1 min-w-0"><p class="truncate font-medium">${this.esc(c.name)}</p><p class="text-xs text-gray-500">${this.fmt(c.unit_price)} each</p></div>
+        <div class="flex-1 min-w-0"><p class="truncate font-medium">${this.esc(c.name)}</p><p class="text-xs text-gray-500">${this.fmt(c.unit_price)} ${t('each')}</p></div>
         <input type="number" min="1" max="${c.max}" value="${c.quantity}" onchange="app.updateCartQty('${c.product_id}', this.value)" class="w-14 px-1 py-1 border rounded text-center mx-2">
         <button onclick="app.updateCartQty('${c.product_id}', 0)" class="text-red-500 text-xs"><i class="fas fa-times"></i></button>
       </div>`).join('');
@@ -211,14 +211,14 @@ MSyncApp.prototype.applyCoupon = async function () {
   const statusBox = document.getElementById('couponStatus');
   if (!code) { this.appliedCoupon = null; statusBox.textContent = ''; this.updateCartTotals(); return; }
 
-  if (this.cart.length === 0) { this.showToast('Add items to the cart first', 'warning'); return; }
+  if (this.cart.length === 0) { this.showToast(t('cart_is_empty_warning'), 'warning'); return; }
   const items = this.cart.map(c => ({ product_id: c.product_id, quantity: c.quantity, unit_price: c.unit_price }));
 
   try {
     const result = await this.api('/coupons/validate', { method: 'POST', body: { code, items } });
     this.appliedCoupon = { code, discount_amount: result.discount_amount };
-    const extra = result.free_units ? ` (${result.free_units} free unit${result.free_units > 1 ? 's' : ''})` : '';
-    statusBox.innerHTML = `<span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Coupon applied: ${this.fmt(result.discount_amount)} off${extra}</span>`;
+    const extra = result.free_units ? ` (${result.free_units})` : '';
+    statusBox.innerHTML = `<span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>${this.fmt(result.discount_amount)}${extra}</span>`;
     this.updateCartTotals();
   } catch (err) {
     this.appliedCoupon = null;
@@ -228,7 +228,7 @@ MSyncApp.prototype.applyCoupon = async function () {
 };
 
 MSyncApp.prototype.checkout = async function () {
-  if (this.cart.length === 0) { this.showToast('Cart is empty', 'warning'); return; }
+  if (this.cart.length === 0) { this.showToast(t('cart_is_empty_warning'), 'warning'); return; }
   const items = this.cart.map(c => ({ product_id: c.product_id, quantity: c.quantity }));
   const customer_name = document.getElementById('customerName').value.trim();
   const customer_phone = document.getElementById('customerPhone').value.trim();
@@ -240,7 +240,7 @@ MSyncApp.prototype.checkout = async function () {
   try {
     const sale = await this.api('/sales', { method: 'POST', body: { items, customer_name, customer_phone, shop_id, customer_id, payment_method, coupon_code } });
     this.appliedCoupon = null;
-    this.showToast(`Sale completed — ${sale.invoice_number}`, 'success');
+    this.showToast(`${t('sale_completed')} — ${sale.invoice_number}`, 'success');
     this.printInvoice(sale);
     this.navigate('new-sale');
   } catch (err) {
@@ -248,6 +248,10 @@ MSyncApp.prototype.checkout = async function () {
   }
 };
 
+// NOTE: the printed invoice itself is intentionally left as a fixed-language
+// document for now (not tied to the UI language toggle) — printed paperwork
+// usually needs its own separate decision about language. Ask if you'd like
+// this translated too, or made bilingual.
 MSyncApp.prototype.printInvoice = function (sale) {
   const win = window.open('', '_blank', 'width=800,height=900');
   const shopLine = sale.shop_name
@@ -297,23 +301,23 @@ MSyncApp.prototype.renderSales = async function () {
   <div class="fade-in glass-panel rounded-xl shadow-sm overflow-hidden">
     <table class="w-full text-sm">
       <thead class="bg-gray-50"><tr class="text-left text-gray-500">
-        <th class="p-3">Invoice</th><th class="p-3">Date</th><th class="p-3">Salesman</th><th class="p-3">Shop</th>
-        <th class="p-3">Customer</th><th class="p-3">Payment</th><th class="p-3 text-right">Total</th><th class="p-3">Status</th><th class="p-3"></th>
+        <th class="p-3">${t('invoice')}</th><th class="p-3">${t('date')}</th><th class="p-3">${t('salesman')}</th><th class="p-3">${t('shop')}</th>
+        <th class="p-3">${t('customer')}</th><th class="p-3">${t('payment')}</th><th class="p-3 text-right">${t('total')}</th><th class="p-3">${t('status')}</th><th class="p-3"></th>
       </tr></thead>
       <tbody>
-        ${sales.length === 0 ? `<tr><td colspan="9" class="p-6 text-center text-gray-400">No sales yet</td></tr>` : sales.map(s => `
+        ${sales.length === 0 ? `<tr><td colspan="9" class="p-6 text-center text-gray-400">${t('no_sales_yet')}</td></tr>` : sales.map(s => `
         <tr class="transaction-row border-b border-gray-50">
           <td class="p-3 font-mono text-xs">${s.invoice_number}</td>
           <td class="p-3 text-gray-500">${new Date(s.created_at).toLocaleString()}</td>
           <td class="p-3">${this.esc(s.salesman_name)}</td>
           <td class="p-3">${this.esc(s.shop_name || '-')}</td>
           <td class="p-3">${this.esc(s.customer_name || '-')}</td>
-          <td class="p-3">${s.payment_method === 'credit' ? '<span class=\'text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-700\'>Credit</span>' : '<span class=\'text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600\'>Cash</span>'}</td>
+          <td class="p-3">${s.payment_method === 'credit' ? `<span class='text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-700'>${t('on_credit')}</span>` : `<span class='text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600'>${t('cash')}</span>`}</td>
           <td class="p-3 text-right font-medium">${this.fmt(s.total_amount)}</td>
-          <td class="p-3"><span class="px-2 py-1 rounded-full text-xs ${s.status === 'voided' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">${s.status}</span></td>
+          <td class="p-3"><span class="px-2 py-1 rounded-full text-xs ${s.status === 'voided' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">${s.status === 'voided' ? t('voided') : t('completed')}</span></td>
           <td class="p-3 text-right space-x-2">
-            <button onclick='app.printInvoice(${JSON.stringify(s).replace(/'/g, "&apos;")})' class="text-blue-600 hover:underline text-xs">Print</button>
-            ${canVoid && s.status !== 'voided' ? `<button onclick="app.voidSale('${s.id}')" class="text-red-600 hover:underline text-xs">Void</button>` : ''}
+            <button onclick='app.printInvoice(${JSON.stringify(s).replace(/'/g, "&apos;")})' class="text-blue-600 hover:underline text-xs">${t('print')}</button>
+            ${canVoid && s.status !== 'voided' ? `<button onclick="app.voidSale('${s.id}')" class="text-red-600 hover:underline text-xs">${t('void')}</button>` : ''}
           </td>
         </tr>`).join('')}
       </tbody>
