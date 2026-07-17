@@ -7,7 +7,7 @@ document.getElementById('superAdminLoginForm').addEventListener('submit', async 
   const btn = document.getElementById('superAdminLoginBtn');
   errBox.classList.add('hidden');
   btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Signing in...';
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> ' + t('signing_in');
 
   try {
     const res = await fetch(API_BASE + '/superadmin/login', {
@@ -16,7 +16,7 @@ document.getElementById('superAdminLoginForm').addEventListener('submit', async 
       body: JSON.stringify({ email, password })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Login failed');
+    if (!res.ok) throw new Error(data.error || t('login_failed'));
 
     app.saToken = data.token;
     app.saUser = data.admin;
@@ -28,7 +28,7 @@ document.getElementById('superAdminLoginForm').addEventListener('submit', async 
     errBox.classList.remove('hidden');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i> Sign In';
+    btn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i> ' + t('sign_in');
   }
 });
 
@@ -52,13 +52,13 @@ MSyncApp.prototype.saApi = async function (path, { method = 'GET', body = null }
   try {
     res = await fetch(API_BASE + '/superadmin' + path, { method, headers, body: body ? JSON.stringify(body) : undefined });
   } catch (err) {
-    throw new Error('Could not reach the server. Check your connection.');
+    throw new Error(t('could_not_reach_server'));
   }
   let data = null;
   try { data = await res.json(); } catch (e) {}
   if (res.status === 401) {
     this.superAdminLogout(true);
-    throw new Error('Session expired, please log in again');
+    throw new Error(t('session_expired_relogin'));
   }
   if (!res.ok) throw new Error((data && data.error) || `Request failed (${res.status})`);
   return data;
@@ -70,7 +70,7 @@ MSyncApp.prototype.superAdminLogout = function (skipRedirectMessage) {
   sessionStorage.removeItem('msync_sa_token');
   sessionStorage.removeItem('msync_sa_user');
   this.showSuperAdminLogin();
-  if (!skipRedirectMessage) this.showToast('Logged out', 'success');
+  if (!skipRedirectMessage) this.showToast(t('logged_out'), 'success');
 };
 
 MSyncApp.prototype.showSuperAdminApp = function () {
@@ -94,29 +94,29 @@ MSyncApp.prototype.renderSuperAdminOverview = async function () {
     <div class="fade-in space-y-6">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="glass-panel rounded-xl p-5">
-          <p class="text-sm text-gray-500">Total Warehouses</p>
+          <p class="text-sm text-gray-500">${t('total_warehouses')}</p>
           <p class="text-3xl font-bold text-gray-900 mt-1">${warehouses.length}</p>
         </div>
         <div class="glass-panel rounded-xl p-5">
-          <p class="text-sm text-gray-500">Combined Sales (all warehouses)</p>
+          <p class="text-sm text-gray-500">${t('combined_sales_all')}</p>
           <p class="text-3xl font-bold text-gray-900 mt-1">${this.fmt(overview.combined.total_sales)}</p>
         </div>
         <div class="glass-panel rounded-xl p-5">
-          <p class="text-sm text-gray-500">Total Completed Sales</p>
+          <p class="text-sm text-gray-500">${t('total_completed_sales')}</p>
           <p class="text-3xl font-bold text-gray-900 mt-1">${overview.combined.total_sale_count}</p>
         </div>
         <div class="glass-panel rounded-xl p-5">
-          <p class="text-sm text-gray-500">Credit Outstanding (all warehouses)</p>
+          <p class="text-sm text-gray-500">${t('credit_outstanding_all')}</p>
           <p class="text-3xl font-bold text-orange-600 mt-1">${this.fmt(overview.combined.total_credit_outstanding)}</p>
-          <p class="text-xs text-gray-400 mt-1">${overview.combined.shops_owing} shop${overview.combined.shops_owing === 1 ? '' : 's'} owing</p>
+          <p class="text-xs text-gray-400 mt-1">${overview.combined.shops_owing} ${t('shops_owing_count')}</p>
         </div>
       </div>
 
       <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">Warehouse Ranking (by total sales)</div>
+        <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">${t('warehouse_ranking')}</div>
         <table class="w-full text-sm">
           <thead class="bg-gray-50"><tr class="text-left text-gray-500">
-            <th class="p-3">#</th><th class="p-3">Warehouse</th><th class="p-3 text-right">Total Sales</th><th class="p-3 text-right">Sale Count</th><th class="p-3 text-right">Credit Owed</th><th class="p-3 text-right">Details</th>
+            <th class="p-3">#</th><th class="p-3">${t('warehouse_col')}</th><th class="p-3 text-right">${t('total_sales_label')}</th><th class="p-3 text-right">${t('sale_count_col')}</th><th class="p-3 text-right">${t('credit_owed_col')}</th><th class="p-3 text-right">${t('details_col')}</th>
           </tr></thead>
           <tbody>
             ${overview.ranking.map((r, i) => `
@@ -126,30 +126,30 @@ MSyncApp.prototype.renderSuperAdminOverview = async function () {
               <td class="p-3 text-right font-semibold">${this.fmt(r.total_sales)}</td>
               <td class="p-3 text-right">${r.sale_count}</td>
               <td class="p-3 text-right ${r.credit_outstanding > 0 ? 'text-orange-600 font-medium' : 'text-gray-400'}">${this.fmt(r.credit_outstanding)}</td>
-              <td class="p-3 text-right"><button onclick="app.renderSuperAdminWarehouseDetail('${r.warehouse_id}')" class="text-blue-600 hover:underline text-xs">View <i class="fas fa-arrow-right ml-1"></i></button></td>
+              <td class="p-3 text-right"><button onclick="app.renderSuperAdminWarehouseDetail('${r.warehouse_id}')" class="text-blue-600 hover:underline text-xs">${t('view')} <i class="fas fa-arrow-right ml-1"></i></button></td>
             </tr>`).join('')}
           </tbody>
         </table>
       </div>
 
       <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">All Warehouses</div>
+        <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">${t('all_warehouses')}</div>
         <table class="w-full text-sm">
           <thead class="bg-gray-50"><tr class="text-left text-gray-500">
-            <th class="p-3">Name</th><th class="p-3">Status</th><th class="p-3 text-right">Users</th><th class="p-3 text-right">Products</th><th class="p-3 text-right">Shops</th><th class="p-3 text-right">Credit Owed</th><th class="p-3 text-right">Actions</th>
+            <th class="p-3">${t('name')}</th><th class="p-3">${t('status')}</th><th class="p-3 text-right">${t('users_col')}</th><th class="p-3 text-right">${t('products_col')}</th><th class="p-3 text-right">${t('shops_col')}</th><th class="p-3 text-right">${t('credit_owed_col')}</th><th class="p-3 text-right">${t('actions')}</th>
           </tr></thead>
           <tbody>
             ${warehouses.map(w => `
             <tr class="transaction-row border-b border-gray-50">
               <td class="p-3 font-medium">${this.esc(w.name)}</td>
-              <td class="p-3"><span class="px-2 py-0.5 rounded-full text-xs ${w.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${w.is_active ? 'Active' : 'Inactive'}</span></td>
+              <td class="p-3"><span class="px-2 py-0.5 rounded-full text-xs ${w.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${w.is_active ? t('active') : t('inactive')}</span></td>
               <td class="p-3 text-right">${w.stats.active_users}</td>
               <td class="p-3 text-right">${w.stats.active_products}</td>
               <td class="p-3 text-right">${w.stats.active_shops}</td>
               <td class="p-3 text-right ${w.stats.credit_outstanding > 0 ? 'text-orange-600 font-medium' : 'text-gray-400'}">${this.fmt(w.stats.credit_outstanding)}</td>
               <td class="p-3 text-right space-x-2">
-                <button onclick="app.renderSuperAdminWarehouseDetail('${w.id}')" class="text-blue-600 hover:underline text-xs">View</button>
-                <button onclick="app.toggleWarehouseStatus('${w.id}', ${!w.is_active})" class="text-xs ${w.is_active ? 'text-red-600' : 'text-green-600'} hover:underline">${w.is_active ? 'Deactivate' : 'Activate'}</button>
+                <button onclick="app.renderSuperAdminWarehouseDetail('${w.id}')" class="text-blue-600 hover:underline text-xs">${t('view')}</button>
+                <button onclick="app.toggleWarehouseStatus('${w.id}', ${!w.is_active})" class="text-xs ${w.is_active ? 'text-red-600' : 'text-green-600'} hover:underline">${w.is_active ? t('deactivate') : t('activate')}</button>
               </td>
             </tr>`).join('')}
           </tbody>
@@ -164,7 +164,7 @@ MSyncApp.prototype.renderSuperAdminOverview = async function () {
 MSyncApp.prototype.toggleWarehouseStatus = async function (warehouseId, activate) {
   try {
     await this.saApi(`/warehouses/${warehouseId}/status`, { method: 'PATCH', body: { is_active: activate } });
-    this.showToast(activate ? 'Warehouse activated' : 'Warehouse deactivated', 'success');
+    this.showToast(activate ? t('warehouse_activated') : t('warehouse_deactivated'), 'success');
     this.renderSuperAdminOverview();
   } catch (err) { this.showToast(err.message, 'error'); }
 };
@@ -178,56 +178,56 @@ MSyncApp.prototype.renderSuperAdminWarehouseDetail = async function (warehouseId
     const d = await this.saApi(`/warehouses/${warehouseId}/dashboard`);
     content.innerHTML = `
     <div class="fade-in space-y-6">
-      <button onclick="app.renderSuperAdminOverview()" class="text-sm text-gray-500 hover:underline"><i class="fas fa-arrow-left mr-1"></i>Back to all warehouses</button>
+      <button onclick="app.renderSuperAdminOverview()" class="text-sm text-gray-500 hover:underline"><i class="fas fa-arrow-left mr-1"></i>${t('back_to_all_warehouses')}</button>
       <h2 class="text-xl font-bold text-gray-900">${this.esc(d.warehouse.name)}</h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="glass-panel rounded-xl p-5">
-          <p class="text-sm text-gray-500">Total Sales</p>
+          <p class="text-sm text-gray-500">${t('total_sales_label')}</p>
           <p class="text-3xl font-bold text-gray-900 mt-1">${this.fmt(d.totals.total_sales)}</p>
         </div>
         <div class="glass-panel rounded-xl p-5">
-          <p class="text-sm text-gray-500">Completed Sales</p>
+          <p class="text-sm text-gray-500">${t('completed_sales_label')}</p>
           <p class="text-3xl font-bold text-gray-900 mt-1">${d.totals.sale_count}</p>
         </div>
       </div>
 
       <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">Low Stock Products</div>
-        ${d.lowStock.length === 0 ? '<p class="p-4 text-sm text-gray-400">No low-stock products.</p>' : `
+        <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">${t('low_stock_products')}</div>
+        ${d.lowStock.length === 0 ? `<p class="p-4 text-sm text-gray-400">${t('no_low_stock_products')}</p>` : `
         <table class="w-full text-sm">
-          <thead class="bg-gray-50"><tr class="text-left text-gray-500"><th class="p-3">SKU</th><th class="p-3">Name</th><th class="p-3 text-right">Stock</th><th class="p-3 text-right">Threshold</th></tr></thead>
+          <thead class="bg-gray-50"><tr class="text-left text-gray-500"><th class="p-3">${t('sku')}</th><th class="p-3">${t('name')}</th><th class="p-3 text-right">${t('stock')}</th><th class="p-3 text-right">${t('threshold')}</th></tr></thead>
           <tbody>${d.lowStock.map(p => `<tr class="border-b border-gray-50"><td class="p-3">${this.esc(p.sku)}</td><td class="p-3">${this.esc(p.name)}</td><td class="p-3 text-right stock-low px-2 rounded">${p.current_stock}</td><td class="p-3 text-right">${p.low_stock_threshold}</td></tr>`).join('')}</tbody>
         </table>`}
       </div>
 
       <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">Top Products</div>
+        <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">${t('top_products')}</div>
         <table class="w-full text-sm">
-          <thead class="bg-gray-50"><tr class="text-left text-gray-500"><th class="p-3">Name</th><th class="p-3 text-right">Units Sold</th><th class="p-3 text-right">Revenue</th></tr></thead>
+          <thead class="bg-gray-50"><tr class="text-left text-gray-500"><th class="p-3">${t('name')}</th><th class="p-3 text-right">${t('units_sold_col')}</th><th class="p-3 text-right">${t('revenue')}</th></tr></thead>
           <tbody>${d.topProducts.map(p => `<tr class="border-b border-gray-50"><td class="p-3">${this.esc(p.name)}</td><td class="p-3 text-right">${p.units_sold}</td><td class="p-3 text-right">${this.fmt(p.revenue)}</td></tr>`).join('')}</tbody>
         </table>
       </div>
 
       <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">Credit Owed</div>
+        <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">${t('credit_owed_section')}</div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
-          <div><p class="text-xs text-gray-500">Total Owed</p><p class="text-xl font-bold text-orange-600">${this.fmt(d.creditSummary.totalOwed)}</p></div>
-          <div><p class="text-xs text-gray-500">Shops Owing</p><p class="text-xl font-bold">${d.creditSummary.shopsOwing}</p></div>
-          <div><p class="text-xs text-gray-500">Overdue (6+ days)</p><p class="text-xl font-bold text-red-600">${d.creditSummary.overdueCount}</p></div>
-          <div><p class="text-xs text-gray-500">Overdue Amount</p><p class="text-xl font-bold text-red-600">${this.fmt(d.creditSummary.overdueAmount)}</p></div>
+          <div><p class="text-xs text-gray-500">${t('total_owed')}</p><p class="text-xl font-bold text-orange-600">${this.fmt(d.creditSummary.totalOwed)}</p></div>
+          <div><p class="text-xs text-gray-500">${t('shops_owing')}</p><p class="text-xl font-bold">${d.creditSummary.shopsOwing}</p></div>
+          <div><p class="text-xs text-gray-500">${t('overdue_6days')}</p><p class="text-xl font-bold text-red-600">${d.creditSummary.overdueCount}</p></div>
+          <div><p class="text-xs text-gray-500">${t('overdue_amount')}</p><p class="text-xl font-bold text-red-600">${this.fmt(d.creditSummary.overdueAmount)}</p></div>
         </div>
-        ${d.shopsOwing.length === 0 ? '<p class="p-4 text-sm text-gray-400">No outstanding credit.</p>' : `
+        ${d.shopsOwing.length === 0 ? `<p class="p-4 text-sm text-gray-400">${t('no_outstanding_credit_period')}</p>` : `
         <table class="w-full text-sm">
-          <thead class="bg-gray-50"><tr class="text-left text-gray-500"><th class="p-3">Shop</th><th class="p-3">Phone</th><th class="p-3 text-right">Owed</th><th class="p-3">Last Credit</th></tr></thead>
+          <thead class="bg-gray-50"><tr class="text-left text-gray-500"><th class="p-3">${t('shop')}</th><th class="p-3">${t('phone')}</th><th class="p-3 text-right">${t('total_owed')}</th><th class="p-3">${t('last_credit_col')}</th></tr></thead>
           <tbody>${d.shopsOwing.map(s => `<tr class="border-b border-gray-50"><td class="p-3">${this.esc(s.name)}</td><td class="p-3">${this.esc(s.phone || '-')}</td><td class="p-3 text-right text-orange-600 font-medium">${this.fmt(s.credit_balance)}</td><td class="p-3 text-gray-500">${s.last_credit_at ? new Date(s.last_credit_at).toLocaleDateString() : '-'}</td></tr>`).join('')}</tbody>
         </table>`}
       </div>
 
       <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">Recent Sales</div>
+        <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">${t('recent_sales')}</div>
         <table class="w-full text-sm">
-          <thead class="bg-gray-50"><tr class="text-left text-gray-500"><th class="p-3">Invoice</th><th class="p-3">Salesman</th><th class="p-3 text-right">Total</th><th class="p-3">Status</th></tr></thead>
+          <thead class="bg-gray-50"><tr class="text-left text-gray-500"><th class="p-3">${t('invoice')}</th><th class="p-3">${t('salesman')}</th><th class="p-3 text-right">${t('total')}</th><th class="p-3">${t('status')}</th></tr></thead>
           <tbody>${d.recentSales.map(s => `<tr class="border-b border-gray-50"><td class="p-3">${this.esc(s.invoice_number)}</td><td class="p-3">${this.esc(s.salesman_name)}</td><td class="p-3 text-right">${this.fmt(s.total_amount)}</td><td class="p-3">${this.esc(s.status)}</td></tr>`).join('')}</tbody>
         </table>
       </div>
