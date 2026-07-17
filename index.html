@@ -33,6 +33,33 @@
 .target-partial { background: linear-gradient(90deg, #f59e0b, #d97706); }
 .target-low { background: linear-gradient(90deg, #ef4444, #dc2626); }
 .password-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #6b7280; }
+
+/* RTL layout fixes: the sidebar and main content use fixed positioning and
+   margins that assume left-to-right. When Arabic (RTL) is active, flip the
+   sidebar to the right edge and shift the main content's reserved space to
+   the right instead of the left, so nothing overlaps or gets cut off. */
+html[dir="rtl"] aside.fixed {
+  right: 0;
+  left: auto;
+  border-right: none;
+  border-left: 1px solid #e5e7eb;
+}
+html[dir="rtl"] main.ml-64 {
+  margin-left: 0;
+  margin-right: 16rem;
+}
+html[dir="rtl"] .password-toggle {
+  right: auto;
+  left: 12px;
+}
+html[dir="rtl"] #toastContainer {
+  right: auto;
+  left: 1rem;
+}
+html[dir="rtl"] .sidebar-item.active {
+  border-right: none;
+  border-left: 3px solid #3b82f6;
+}
 </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
