@@ -224,6 +224,15 @@ const I18N = {
     expiry_date_optional: 'Expiry Date (optional)',
     offer_updated: 'Offer updated',
     offer_created: 'Offer created',
+    // QR / Visits
+    qr_code: 'QR Code',
+    qr_code_hint: 'Scan this to view the account statement',
+    scan_visit: 'Scan Visit',
+    visit_confirmed: 'Visit confirmed',
+    today: 'Today',
+    all_time: 'All Time',
+    no_visits_yet: 'No visits yet',
+    nav_shop_visits: 'Shop Visits',
   },
   ar: {
     // App
@@ -448,6 +457,15 @@ const I18N = {
     expiry_date_optional: 'تاريخ الانتهاء (اختياري)',
     offer_updated: 'تم تحديث العرض',
     offer_created: 'تم إنشاء العرض',
+    // QR / Visits
+    qr_code: 'رمز QR',
+    qr_code_hint: 'امسح هذا الرمز لعرض كشف الحساب',
+    scan_visit: 'تأكيد زيارة',
+    visit_confirmed: 'تم تأكيد الزيارة',
+    today: 'اليوم',
+    all_time: 'كل الفترات',
+    no_visits_yet: 'لا توجد زيارات بعد',
+    nav_shop_visits: 'زيارات المحلات',
   }
 };
 

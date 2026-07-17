@@ -33,6 +33,7 @@ MSyncApp.prototype.renderShops = async function (view) {
         <button onclick="app.setShopsView('map')" class="px-3 py-1.5 rounded-md text-sm ${this._shopsView === 'map' ? 'bg-white shadow-sm font-medium' : 'text-gray-500'}"><i class="fas fa-map-marked-alt mr-1"></i>${t('map')}</button>
       </div>
       <div class="flex gap-2 flex-wrap">
+        <button onclick="app.scanShopVisit()" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm hover:bg-gray-900"><i class="fas fa-qrcode mr-2"></i>${t('scan_visit')}</button>
         <button onclick="app.exportShopsExcel()" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700"><i class="fas fa-file-excel mr-2"></i>${t('export_excel')}</button>
         ${canManage ? `
         <button onclick="app.exportCreditExcel()" class="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700"><i class="fas fa-file-excel mr-2"></i>${t('credit_report_excel')}</button>
@@ -98,6 +99,7 @@ MSyncApp.prototype.renderShopsList = function () {
             ${s.latitude && s.longitude ? `<a href="https://maps.google.com/?q=${s.latitude},${s.longitude}" target="_blank" class="text-xs text-blue-600 hover:underline"><i class="fas fa-external-link-alt mr-1"></i>${t('view_on_google_maps')}</a>` : ''}
           </div>
           <div class="text-right space-y-1">
+            <button onclick="app.openShopQRModal('${s.id}')" class="text-purple-600 text-xs hover:underline block">${t('qr_code')}</button>
             ${canManage ? `<button onclick="app.openShopModal('${s.id}')" class="text-blue-600 text-xs hover:underline block">${t('edit')}</button>` : ''}
             ${canManage && owes ? `<button onclick="app.openShopPaymentModal('${s.id}')" class="text-green-600 text-xs hover:underline block">${t('record_payment')}</button>` : ''}
           </div>
@@ -367,4 +369,101 @@ MSyncApp.prototype.locateMeOnShopPicker = function () {
   }, () => {
     this.showToast(t('location_error'), 'error');
   });
+};
+
+// ---------- Shop QR Code (public statement link) ----------
+MSyncApp.prototype.getShopStatementUrl = function (shop) {
+  return `${window.location.origin}/shop.html?token=${shop.public_token}`;
+};
+
+MSyncApp.prototype.openShopQRModal = function (shopId) {
+  const shop = this._shops.find(x => x.id === shopId);
+  if (!shop) return;
+  const url = this.getShopStatementUrl(shop);
+  const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(url)}`;
+
+  document.getElementById('modalContent').innerHTML = `
+  <div class="p-6 text-center">
+    <h3 class="text-lg font-bold mb-1">${t('qr_code')} — ${this.esc(shop.name)}</h3>
+    <p class="text-sm text-gray-500 mb-4">${t('qr_code_hint')}</p>
+    <img src="${qrImg}" alt="QR" class="mx-auto rounded-lg border" width="280" height="280">
+    <div class="flex gap-3 pt-4">
+      <button onclick="app.printShopQR('${shop.id}')" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"><i class="fas fa-print mr-2"></i>${t('print')}</button>
+      <button type="button" onclick="app.closeModal()" class="flex-1 bg-gray-100 py-2 rounded-lg hover:bg-gray-200">${t('close')}</button>
+    </div>
+  </div>`;
+  document.getElementById('modalContainer').classList.remove('hidden');
+};
+
+MSyncApp.prototype.printShopQR = function (shopId) {
+  const shop = this._shops.find(x => x.id === shopId);
+  if (!shop) return;
+  const url = this.getShopStatementUrl(shop);
+  const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(url)}`;
+  const win = window.open('', '_blank', 'width=500,height=650');
+  win.document.write(`
+  <html><head><title>${this.esc(shop.name)} - QR</title>
+  <style>
+    body{font-family:sans-serif;text-align:center;padding:40px;}
+    h2{margin-bottom:4px;}
+    p{color:#6b7280;margin-top:0;}
+    img{margin-top:20px;border:1px solid #e5e7eb;border-radius:12px;}
+  </style>
+  </head><body>
+    <h2>${this.esc(shop.name)}</h2>
+    <p>امسح هذا الرمز لعرض كشف الحساب</p>
+    <img src="${qrImg}" width="350" height="350">
+    <script>window.print();</script>
+  </body></html>`);
+  win.document.close();
+};
+
+// ---------- Confirm a shop visit by scanning its QR code (in-app) ----------
+MSyncApp.prototype.scanShopVisit = function () {
+  this.openBarcodeScanner(async (decodedText) => {
+    let token = decodedText;
+    try {
+      const url = new URL(decodedText);
+      const fromUrl = url.searchParams.get('token');
+      if (fromUrl) token = fromUrl;
+    } catch (e) { /* not a URL, treat decodedText as the raw token itself */ }
+
+    try {
+      const result = await this.api('/shops/confirm-visit-by-token', { method: 'POST', body: { public_token: token } });
+      this.showToast(`${t('visit_confirmed')}: ${result.shop_name}`, 'success');
+    } catch (err) {
+      this.showToast(err.message, 'error');
+    }
+  });
+};
+
+// ---------- Shop Visits page ----------
+MSyncApp.prototype.renderShopVisits = async function (showAll) {
+  this._shopVisitsShowAll = showAll || false;
+  const visits = await this.api('/shops/visits' + (this._shopVisitsShowAll ? '?all=1' : ''));
+  const isManager = this.currentUser.role === 'owner' || this.currentUser.role === 'admin';
+  const content = document.getElementById('pageContent');
+  content.innerHTML = `
+  <div class="fade-in space-y-4">
+    <div class="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit">
+      <button onclick="app.renderShopVisits(false)" class="px-3 py-1.5 rounded-md text-sm ${!this._shopVisitsShowAll ? 'bg-white shadow-sm font-medium' : 'text-gray-500'}">${t('today')}</button>
+      <button onclick="app.renderShopVisits(true)" class="px-3 py-1.5 rounded-md text-sm ${this._shopVisitsShowAll ? 'bg-white shadow-sm font-medium' : 'text-gray-500'}">${t('all_time')}</button>
+    </div>
+    <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50"><tr class="text-left text-gray-500">
+          <th class="p-3">${t('shop')}</th><th class="p-3">${t('location_text_address')}</th>${isManager ? `<th class="p-3">${t('salesman')}</th>` : ''}<th class="p-3">${t('date')}</th>
+        </tr></thead>
+        <tbody>
+          ${visits.length === 0 ? `<tr><td colspan="4" class="p-6 text-center text-gray-400">${t('no_visits_yet')}</td></tr>` : visits.map(v => `
+          <tr class="transaction-row border-b border-gray-50">
+            <td class="p-3 font-medium">${this.esc(v.shop_name)}</td>
+            <td class="p-3 text-gray-500">${this.esc(v.shop_location || '-')}</td>
+            ${isManager ? `<td class="p-3">${this.esc(v.salesman_name)}</td>` : ''}
+            <td class="p-3 text-gray-500">${new Date(v.visited_at).toLocaleString()}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
 };
