@@ -11,17 +11,21 @@ MSyncApp.prototype.renderSuppliers = async function () {
     <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
       <table class="w-full text-sm">
         <thead class="bg-gray-50"><tr class="text-left text-gray-500">
-          <th class="p-3">${t('name')}</th><th class="p-3">${t('contact')}</th><th class="p-3">${t('phone')}</th><th class="p-3">${t('email')}</th><th class="p-3">${t('status')}</th><th class="p-3 text-right">${t('actions')}</th>
+          <th class="p-3">${t('name')}</th><th class="p-3">${t('contact')}</th><th class="p-3">${t('phone')}</th><th class="p-3">${t('email')}</th><th class="p-3">${t('status')}</th><th class="p-3">${t('portal_access')}</th><th class="p-3 text-right">${t('actions')}</th>
         </tr></thead>
         <tbody>
-          ${suppliers.length === 0 ? `<tr><td colspan="6" class="p-6 text-center text-gray-400">${t('no_suppliers_yet')}</td></tr>` : suppliers.map(s => `
+          ${suppliers.length === 0 ? `<tr><td colspan="7" class="p-6 text-center text-gray-400">${t('no_suppliers_yet')}</td></tr>` : suppliers.map(s => `
           <tr class="transaction-row border-b border-gray-50">
             <td class="p-3 font-medium">${this.esc(s.name)}</td>
             <td class="p-3 text-gray-500">${this.esc(s.contact_name || '-')}</td>
             <td class="p-3 text-gray-500">${this.esc(s.phone || '-')}</td>
             <td class="p-3 text-gray-500">${this.esc(s.email || '-')}</td>
             <td class="p-3"><span class="px-2 py-0.5 rounded-full text-xs ${s.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${s.is_active ? t('active') : t('inactive')}</span></td>
-            <td class="p-3 text-right"><button onclick="app.openSupplierModal('${s.id}')" class="text-blue-600 hover:underline text-xs">${t('edit')}</button></td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded-full text-xs ${s.login_enabled ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-500'}">${s.login_enabled ? t('enabled') : t('not_enabled')}</span></td>
+            <td class="p-3 text-right space-x-2">
+              <button onclick="app.openSupplierModal('${s.id}')" class="text-blue-600 hover:underline text-xs">${t('edit')}</button>
+              <button onclick="app.openSupplierLoginModal('${s.id}')" class="text-teal-700 hover:underline text-xs">${t('give_login_access')}</button>
+            </td>
           </tr>`).join('')}
         </tbody>
       </table>
@@ -86,16 +90,17 @@ MSyncApp.prototype.renderPurchaseOrders = async function () {
     <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
       <table class="w-full text-sm">
         <thead class="bg-gray-50"><tr class="text-left text-gray-500">
-          <th class="p-3">${t('order_number')}</th><th class="p-3">${t('supplier')}</th><th class="p-3">${t('date')}</th><th class="p-3 text-right">${t('total')}</th><th class="p-3">${t('status')}</th><th class="p-3 text-right">${t('actions')}</th>
+          <th class="p-3">${t('order_number')}</th><th class="p-3">${t('supplier')}</th><th class="p-3">${t('date')}</th><th class="p-3 text-right">${t('total')}</th><th class="p-3">${t('status')}</th><th class="p-3">${t('shipment')}</th><th class="p-3 text-right">${t('actions')}</th>
         </tr></thead>
         <tbody>
-          ${orders.length === 0 ? `<tr><td colspan="6" class="p-6 text-center text-gray-400">${t('no_purchase_orders_yet')}</td></tr>` : orders.map(po => `
+          ${orders.length === 0 ? `<tr><td colspan="7" class="p-6 text-center text-gray-400">${t('no_purchase_orders_yet')}</td></tr>` : orders.map(po => `
           <tr class="transaction-row border-b border-gray-50">
             <td class="p-3 font-mono text-xs">${this.esc(po.order_number)}</td>
             <td class="p-3">${this.esc(po.supplier_name)}</td>
             <td class="p-3 text-gray-500">${new Date(po.created_at).toLocaleString()}</td>
             <td class="p-3 text-right font-medium">${this.fmt(po.total_amount)}</td>
             <td class="p-3"><span class="px-2 py-1 rounded-full text-xs ${statusColor[po.status]}">${statusLabel[po.status]}</span></td>
+            <td class="p-3">${po.shipment_status === 'loaded' ? `<span class="px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700">${t('loaded_status')}</span>` : `<span class="px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-500">${t('awaiting_status')}</span>`}</td>
             <td class="p-3 text-right space-x-2">
               <button onclick="app.viewPODetail('${po.id}')" class="text-blue-600 hover:underline text-xs">${t('view')}</button>
               ${po.status === 'pending' ? `<button onclick="app.receivePO('${po.id}')" class="text-green-600 hover:underline text-xs">${t('mark_received')}</button>
@@ -222,9 +227,55 @@ MSyncApp.prototype.viewPODetail = async function (poId) {
     </table>
     <p class="text-right font-bold mb-4">${t('total')}: ${this.fmt(po.total_amount)}</p>
     ${po.notes ? `<p class="text-sm text-gray-500 mb-4"><strong>${t('notes')}:</strong> ${this.esc(po.notes)}</p>` : ''}
+    ${po.shipment_status === 'loaded' ? `
+    <div class="border rounded-lg p-3 bg-blue-50 mb-4">
+      <p class="text-sm font-semibold mb-1"><i class="fas fa-truck mr-1"></i>${t('loaded_status')}</p>
+      <p class="text-sm">${t('driver_name')}: ${this.esc(po.driver_name || '-')}</p>
+      <p class="text-sm">${t('driver_phone')}: ${this.esc(po.driver_phone || '-')}</p>
+      <p class="text-sm">${t('truck_number')}: ${this.esc(po.truck_number || '-')}</p>
+      ${po.shipment_notes ? `<p class="text-sm">${t('notes')}: ${this.esc(po.shipment_notes)}</p>` : ''}
+    </div>` : po.status === 'pending' ? `<p class="text-sm text-gray-400 mb-4"><i class="fas fa-clock mr-1"></i>${t('awaiting_status')}</p>` : ''}
     <button type="button" onclick="app.closeModal()" class="w-full bg-gray-100 py-2 rounded-lg hover:bg-gray-200">${t('close')}</button>
   </div>`;
   document.getElementById('modalContainer').classList.remove('hidden');
+};
+
+MSyncApp.prototype.openSupplierLoginModal = function (supplierId) {
+  const s = (this._suppliersCache || []).find(x => x.id === supplierId);
+  document.getElementById('modalContent').innerHTML = `
+  <div class="p-6">
+    <h3 class="text-lg font-bold mb-1">${t('give_login_access')}</h3>
+    <p class="text-sm text-gray-500 mb-4">${this.esc(s ? s.name : '')}</p>
+    <form id="supplierLoginAccessForm" class="space-y-3">
+      <div><label class="block text-sm font-medium mb-1">${t('supplier_login_email')}</label><input type="email" name="login_email" value="${s && s.login_email ? this.esc(s.login_email) : ''}" required class="w-full px-3 py-2 border rounded-lg"></div>
+      <div><label class="block text-sm font-medium mb-1">${t('supplier_login_password')}</label><input type="password" name="password" minlength="8" required class="w-full px-3 py-2 border rounded-lg"></div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="flex-1 bg-teal-700 text-white py-2 rounded-lg hover:bg-teal-800">${t('save')}</button>
+        ${s && s.login_enabled ? `<button type="button" onclick="app.revokeSupplierLogin('${supplierId}')" class="flex-1 bg-red-100 text-red-700 py-2 rounded-lg hover:bg-red-200">${t('revoke_login')}</button>` : ''}
+        <button type="button" onclick="app.closeModal()" class="flex-1 bg-gray-100 py-2 rounded-lg hover:bg-gray-200">${t('cancel')}</button>
+      </div>
+    </form>
+  </div>`;
+  document.getElementById('modalContainer').classList.remove('hidden');
+  document.getElementById('supplierLoginAccessForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    try {
+      await this.api(`/suppliers/${supplierId}/login-access`, { method: 'PUT', body: data });
+      this.showToast(t('login_access_granted'), 'success');
+      this.closeModal();
+      this.refreshCurrentPage();
+    } catch (err) { this.showToast(err.message, 'error'); }
+  });
+};
+
+MSyncApp.prototype.revokeSupplierLogin = async function (supplierId) {
+  try {
+    await this.api(`/suppliers/${supplierId}/revoke-login`, { method: 'POST' });
+    this.showToast(t('login_revoked'), 'success');
+    this.closeModal();
+    this.refreshCurrentPage();
+  } catch (err) { this.showToast(err.message, 'error'); }
 };
 
 MSyncApp.prototype.receivePO = async function (poId) {

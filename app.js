@@ -17,9 +17,9 @@ class MSyncApp {
     }
   }
 
-  // ---------- Screen switching (login / register warehouse / super admin) ----------
+  // ---------- Screen switching (login / register warehouse / super admin / supplier) ----------
   hideAllScreens() {
-    ['loginScreen', 'registerWarehouseScreen', 'superAdminLoginScreen', 'superAdminApp', 'mainApp'].forEach(id => {
+    ['loginScreen', 'registerWarehouseScreen', 'superAdminLoginScreen', 'superAdminApp', 'supplierLoginScreen', 'supplierApp', 'mainApp'].forEach(id => {
       document.getElementById(id).classList.add('hidden');
     });
   }
@@ -37,6 +37,11 @@ class MSyncApp {
   showSuperAdminLogin() {
     this.hideAllScreens();
     document.getElementById('superAdminLoginScreen').classList.remove('hidden');
+  }
+
+  showSupplierLogin() {
+    this.hideAllScreens();
+    document.getElementById('supplierLoginScreen').classList.remove('hidden');
   }
 
   // ---------- API helper ----------

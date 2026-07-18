@@ -93,6 +93,7 @@ html[dir="rtl"] .sidebar-item.active {
 <button onclick="app.showRegisterWarehouse()" class="text-blue-600 hover:underline"><i class="fas fa-plus mr-1"></i><span data-i18n="register_new_warehouse">Register a new warehouse</span></button>
 <button onclick="app.showSuperAdminLogin()" class="text-gray-400 hover:text-gray-600 hover:underline"><i class="fas fa-user-shield mr-1"></i><span data-i18n="super_admin">Super Admin</span></button>
 </div>
+<div class="mt-2 text-center"><button onclick="app.showSupplierLogin()" class="text-xs text-gray-400 hover:text-gray-600 hover:underline"><i class="fas fa-truck mr-1"></i><span data-i18n="supplier_portal">Supplier Portal</span></button></div>
 <div class="mt-4 text-center"><button onclick="setLanguage(currentLang==='ar'?'en':'ar')" class="text-xs text-gray-400 hover:text-gray-600 underline"><i class="fas fa-language mr-1"></i>EN / عربي</button></div>
 </div>
 </div>
@@ -175,6 +176,47 @@ html[dir="rtl"] .sidebar-item.active {
 <div class="p-8" id="superAdminContent"></div>
 </div>
 
+<!-- Supplier Login Screen -->
+<div id="supplierLoginScreen" class="hidden min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-700 via-teal-800 to-gray-900">
+<div class="glass-panel rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
+<div class="text-center mb-8">
+<i class="fas fa-truck text-4xl text-teal-700 mb-3"></i>
+<h1 class="text-2xl font-bold text-gray-900" data-i18n="supplier_portal">Supplier Portal</h1>
+<p class="text-gray-500 mt-1" data-i18n="supplier_portal_subtitle">Track your purchase orders</p>
+</div>
+<form id="supplierLoginForm" class="space-y-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="email">Email</label>
+<input type="email" id="supEmailInput" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-500 outline-none">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="password">Password</label>
+<div class="relative">
+<input type="password" id="supPasswordInput" required class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-500 outline-none">
+<i class="fas fa-eye password-toggle" onclick="app.togglePassword('supPasswordInput', this)"></i>
+</div>
+</div>
+<div id="supplierLoginError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
+<button type="submit" id="supplierLoginBtn" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg transition shadow-lg">
+<i class="fas fa-sign-in-alt mr-2"></i> <span data-i18n="sign_in">Sign In</span>
+</button>
+<button type="button" onclick="app.showLogin()" class="w-full text-center text-sm text-gray-500 hover:underline" data-i18n="back_to_sign_in">Back to sign in</button>
+</form>
+</div>
+</div>
+
+<!-- Supplier Portal App -->
+<div id="supplierApp" class="hidden min-h-screen bg-gray-50">
+<header class="bg-teal-800 text-white px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+<div class="flex items-center gap-3">
+<i class="fas fa-truck text-xl"></i>
+<h1 class="text-lg font-bold" id="supplierPortalTitle" data-i18n="supplier_portal">Supplier Portal</h1>
+</div>
+<div class="flex items-center gap-3"><button onclick="setLanguage(currentLang==='ar'?'en':'ar')" class="text-xs text-teal-200 hover:text-white underline"><i class="fas fa-language mr-1"></i>EN / عربي</button><button onclick="app.supplierLogout()" class="text-sm text-teal-200 hover:text-white"><i class="fas fa-sign-out-alt mr-2"></i><span data-i18n="logout">Logout</span></button></div>
+</header>
+<div class="p-8" id="supplierContent"></div>
+</div>
+
 <!-- Main App -->
 <div id="mainApp" class="hidden min-h-screen flex">
 <aside class="w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full z-20">
@@ -246,6 +288,7 @@ html[dir="rtl"] .sidebar-item.active {
 <script src="app-users.js"></script>
 <script src="app-warehouse-register.js"></script>
 <script src="app-superadmin.js"></script>
+<script src="app-supplier-portal.js"></script>
 <script src="app-reports.js"></script>
 <script src="app-purchasing.js"></script>
 <script src="app-customers.js"></script>
@@ -254,6 +297,7 @@ html[dir="rtl"] .sidebar-item.active {
 <script>
   const app = new MSyncApp();
   if (app.checkSuperAdminSession) app.checkSuperAdminSession();
+  if (app.checkSupplierSession) app.checkSupplierSession();
 </script>
 </body>
 </html>
