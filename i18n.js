@@ -46,6 +46,7 @@ const I18N = {
     role_owner: 'Owner',
     role_admin: 'Admin',
     role_salesman: 'Salesman',
+    role_sales_supervisor: 'Sales Supervisor',
     // Common buttons/words
     save: 'Save',
     cancel: 'Cancel',
@@ -332,6 +333,7 @@ const I18N = {
     add_team_member: 'Add Team Member',
     role: 'Role',
     salesman_role: 'Salesman',
+    sales_supervisor_role: 'Sales Supervisor',
     admin_role: 'Admin',
     owner_role: 'Owner',
     reset_password: 'Reset Password',
@@ -429,6 +431,7 @@ const I18N = {
     role_owner: 'مالك',
     role_admin: 'مشرف',
     role_salesman: 'مندوب مبيعات',
+    role_sales_supervisor: 'مشرف مبيعات',
     // Common buttons/words
     save: 'حفظ',
     cancel: 'إلغاء',
@@ -715,6 +718,7 @@ const I18N = {
     add_team_member: 'إضافة عضو فريق',
     role: 'الدور',
     salesman_role: 'مندوب مبيعات',
+    sales_supervisor_role: 'مشرف مبيعات',
     admin_role: 'مشرف',
     owner_role: 'مالك',
     reset_password: 'إعادة تعيين كلمة المرور',

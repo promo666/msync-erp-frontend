@@ -22,7 +22,7 @@ MSyncApp.prototype.renderShops = async function (view) {
   const shops = await this.api('/shops');
   this._shops = shops;
   this._shopsView = view || this._shopsView || 'list';
-  const canManage = this.currentUser.role === 'owner' || this.currentUser.role === 'admin';
+  const canManage = this.currentUser.role === 'owner' || this.currentUser.role === 'admin' || this.currentUser.role === 'sales_supervisor';
   const content = document.getElementById('pageContent');
 
   content.innerHTML = `
@@ -68,7 +68,7 @@ MSyncApp.prototype.setShopsView = function (view) {
 };
 
 MSyncApp.prototype.renderShopsList = function () {
-  const canManage = this.currentUser.role === 'owner' || this.currentUser.role === 'admin';
+  const canManage = this.currentUser.role === 'owner' || this.currentUser.role === 'admin' || this.currentUser.role === 'sales_supervisor';
   const q = (document.getElementById('shopSearchInput')?.value || '').toLowerCase().trim();
   const shops = this._shops.filter(s =>
     !q ||

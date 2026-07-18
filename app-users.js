@@ -39,6 +39,7 @@ MSyncApp.prototype.openAddUserModal = function () {
       <div><label class="block text-sm font-medium mb-1">${t('role')}</label>
         <select name="role" class="w-full px-3 py-2 border rounded-lg">
           <option value="salesman">${t('salesman_role')}</option>
+          <option value="sales_supervisor">${t('role_sales_supervisor')}</option>
           <option value="admin">${t('admin_role')}</option>
           <option value="owner">${t('owner_role')}</option>
         </select>

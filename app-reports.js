@@ -63,13 +63,14 @@ MSyncApp.prototype.loadReportsData = async function () {
   const body = document.getElementById('reportsBody');
   body.innerHTML = '<div class="flex items-center justify-center h-64"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>';
 
+  const isSupervisor = this.currentUser.role === 'sales_supervisor';
   const qs = `?from=${this.reportFrom}&to=${this.reportTo}`;
   try {
     const [summary, timeseries, bestSellers, profitMargins, byShop, bySalesman, lowStock] = await Promise.all([
       this.api('/reports/summary' + qs),
       this.api('/reports/timeseries' + qs + '&groupBy=day'),
       this.api('/reports/best-sellers' + qs + '&limit=10'),
-      this.api('/reports/profit-margins' + qs),
+      isSupervisor ? Promise.resolve([]) : this.api('/reports/profit-margins' + qs),
       this.api('/reports/by-shop' + qs),
       this.api('/reports/by-salesman' + qs),
       this.api('/reports/low-stock')
@@ -82,8 +83,9 @@ MSyncApp.prototype.loadReportsData = async function () {
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div class="glass-panel rounded-xl p-5"><p class="text-sm text-gray-500">${t('revenue')}</p><p class="text-2xl font-bold mt-1">${this.fmt(summary.total_revenue)}</p></div>
       <div class="glass-panel rounded-xl p-5"><p class="text-sm text-gray-500">${t('sales_col')}</p><p class="text-2xl font-bold mt-1">${summary.total_sales}</p></div>
+      ${!isSupervisor ? `
       <div class="glass-panel rounded-xl p-5"><p class="text-sm text-gray-500">${t('profit')}</p><p class="text-2xl font-bold mt-1 text-green-600">${this.fmt(summary.total_profit)}</p></div>
-      <div class="glass-panel rounded-xl p-5"><p class="text-sm text-gray-500">${t('margin_col')}</p><p class="text-2xl font-bold mt-1">${summary.margin_pct.toFixed(1)}%</p></div>
+      <div class="glass-panel rounded-xl p-5"><p class="text-sm text-gray-500">${t('margin_col')}</p><p class="text-2xl font-bold mt-1">${summary.margin_pct.toFixed(1)}%</p></div>` : ''}
     </div>
 
     <div class="glass-panel rounded-xl p-5">
@@ -98,11 +100,12 @@ MSyncApp.prototype.loadReportsData = async function () {
         <tbody>${bestSellers.length === 0 ? `<tr><td colspan="3" class="p-4 text-center text-gray-400">${t('no_sales_in_period')}</td></tr>` : bestSellers.map(p => `<tr class="border-b border-gray-50"><td class="p-3">${this.esc(p.name)}</td><td class="p-3 text-right">${p.units_sold}</td><td class="p-3 text-right">${this.fmt(p.revenue)}</td></tr>`).join('')}</tbody></table>
       </div>
 
+      ${!isSupervisor ? `
       <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
         <div class="p-4 border-b border-gray-100 font-semibold">${t('profit_margins_by_product')}</div>
         <table class="w-full text-sm"><thead class="bg-gray-50"><tr class="text-left text-gray-500"><th class="p-3">${t('product')}</th><th class="p-3 text-right">${t('profit')}</th><th class="p-3 text-right">${t('margin_col')}</th></tr></thead>
         <tbody>${profitMargins.length === 0 ? `<tr><td colspan="3" class="p-4 text-center text-gray-400">${t('no_sales_in_period')}</td></tr>` : profitMargins.map(p => `<tr class="border-b border-gray-50"><td class="p-3">${this.esc(p.name)}</td><td class="p-3 text-right">${this.fmt(p.profit)}</td><td class="p-3 text-right">${p.margin_pct.toFixed(1)}%</td></tr>`).join('')}</tbody></table>
-      </div>
+      </div>` : ''}
 
       <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
         <div class="p-4 border-b border-gray-100 font-semibold">${t('sales_by_shop')}</div>
@@ -147,12 +150,13 @@ MSyncApp.prototype.renderReportsChart = function (timeseries) {
 MSyncApp.prototype.exportReportsExcel = function () {
   if (!this.reportData) { this.showToast(t('load_report_first'), 'warning'); return; }
   const d = this.reportData;
+  const isSupervisor = this.currentUser.role === 'sales_supervisor';
   const wb = XLSX.utils.book_new();
 
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([d.summary]), 'Summary');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.timeseries), 'Sales Over Time');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.bestSellers), 'Best Sellers');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.profitMargins), 'Profit Margins');
+  if (!isSupervisor) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.profitMargins), 'Profit Margins');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.byShop), 'By Shop');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.bySalesman), 'By Salesman');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.lowStock), 'Low Stock');
@@ -164,6 +168,7 @@ MSyncApp.prototype.exportReportsExcel = function () {
 MSyncApp.prototype.exportReportsPdf = function () {
   if (!this.reportData) { this.showToast(t('load_report_first'), 'warning'); return; }
   const d = this.reportData;
+  const isSupervisor = this.currentUser.role === 'sales_supervisor';
   const win = window.open('', '_blank', 'width=900,height=1000');
 
   const table = (title, rows, cols) => `
@@ -200,16 +205,17 @@ MSyncApp.prototype.exportReportsPdf = function () {
   <div class="summary-grid">
     <div class="summary-box"><div class="label">Revenue</div><div class="value">${money(d.summary.total_revenue)}</div></div>
     <div class="summary-box"><div class="label">Sales</div><div class="value">${d.summary.total_sales}</div></div>
+    ${!isSupervisor ? `
     <div class="summary-box"><div class="label">Profit</div><div class="value">${money(d.summary.total_profit)}</div></div>
-    <div class="summary-box"><div class="label">Margin</div><div class="value">${pct(d.summary.margin_pct)}</div></div>
+    <div class="summary-box"><div class="label">Margin</div><div class="value">${pct(d.summary.margin_pct)}</div></div>` : ''}
   </div>
 
   ${table('Best-Selling Products', d.bestSellers, [
     { key: 'name', label: 'Product' }, { key: 'units_sold', label: 'Units' }, { key: 'revenue', label: 'Revenue', fmt: money }
   ])}
-  ${table('Profit Margins by Product', d.profitMargins, [
+  ${!isSupervisor ? table('Profit Margins by Product', d.profitMargins, [
     { key: 'name', label: 'Product' }, { key: 'profit', label: 'Profit', fmt: money }, { key: 'margin_pct', label: 'Margin', fmt: pct }
-  ])}
+  ]) : ''}
   ${table('Sales by Shop', d.byShop, [
     { key: 'shop_name', label: 'Shop' }, { key: 'sale_count', label: 'Sales' }, { key: 'revenue', label: 'Revenue', fmt: money }
   ])}
