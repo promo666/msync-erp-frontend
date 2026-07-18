@@ -350,6 +350,7 @@ const I18N = {
     set_new_password_title: 'Set a New Password',
     change_password_title: 'Change Password',
     temp_password_notice: "You're using a temporary password. Please set your own before continuing.",
+    get_directions: 'Get Directions',
   },
   ar: {
     // App
@@ -700,6 +701,7 @@ const I18N = {
     set_new_password_title: 'تعيين كلمة مرور جديدة',
     change_password_title: 'تغيير كلمة المرور',
     temp_password_notice: 'أنت تستخدم كلمة مرور مؤقتة. الرجاء تعيين كلمة مرور خاصة بك قبل المتابعة.',
+    get_directions: 'الاتجاهات',
   }
 };
 

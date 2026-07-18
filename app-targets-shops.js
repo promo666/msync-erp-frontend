@@ -97,7 +97,7 @@ MSyncApp.prototype.renderShopsList = function () {
             <p class="text-sm text-gray-500 mt-1"><i class="fas fa-user mr-1"></i>${this.esc(s.owner_name || '-')}</p>
             <p class="text-sm text-gray-500"><i class="fas fa-phone mr-1"></i>${this.esc(s.phone || '-')}</p>
             <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i>${this.esc(s.location || '-')}</p>
-            ${s.latitude && s.longitude ? `<a href="https://maps.google.com/?q=${s.latitude},${s.longitude}" target="_blank" class="text-xs text-blue-600 hover:underline"><i class="fas fa-external-link-alt mr-1"></i>${t('view_on_google_maps')}</a>` : ''}
+            ${s.latitude && s.longitude ? this.buildDirectionsLinks(s.latitude, s.longitude) : ''}
           </div>
           <div class="text-right space-y-1">
             <button onclick="app.openShopQRModal('${s.id}')" class="text-purple-600 text-xs hover:underline block">${t('qr_code')}</button>
@@ -167,6 +167,7 @@ MSyncApp.prototype.renderShopsMap = function () {
       ${s.owner_name ? this.esc(s.owner_name) + '<br>' : ''}
       ${s.phone ? this.esc(s.phone) + '<br>' : ''}
       ${this.esc(s.location || '')}
+      <div style="margin-top:6px;">${this.buildDirectionsLinks(s.latitude, s.longitude)}</div>
     `);
     return marker;
   });
@@ -467,4 +468,17 @@ MSyncApp.prototype.renderShopVisits = async function (showAll) {
       </table>
     </div>
   </div>`;
+};
+
+// Turn-by-turn navigation links (not just a static map pin) — opens the
+// user's chosen app directly in driving-directions mode from wherever they
+// currently are, to this shop's saved location.
+MSyncApp.prototype.buildDirectionsLinks = function (lat, lng) {
+  const gmaps = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+  const waze = `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
+  return `
+    <span class="text-xs text-gray-400">${t('get_directions')}:</span>
+    <a href="${gmaps}" target="_blank" class="text-xs text-blue-600 hover:underline ml-1"><i class="fas fa-location-arrow mr-1"></i>Google Maps</a>
+    <a href="${waze}" target="_blank" class="text-xs text-cyan-600 hover:underline ml-2"><i class="fas fa-location-arrow mr-1"></i>Waze</a>
+  `;
 };
