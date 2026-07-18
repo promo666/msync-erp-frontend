@@ -372,6 +372,7 @@ const I18N = {
     portal_access: 'Portal Access',
     enabled: 'Enabled',
     not_enabled: 'Not Enabled',
+    optional_field: 'optional',
   },
   ar: {
     // App
@@ -744,6 +745,7 @@ const I18N = {
     portal_access: 'صلاحية البوابة',
     enabled: 'مفعّلة',
     not_enabled: 'غير مفعّلة',
+    optional_field: 'اختياري',
   }
 };
 

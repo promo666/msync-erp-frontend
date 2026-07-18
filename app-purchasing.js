@@ -55,6 +55,14 @@ MSyncApp.prototype.openSupplierModal = function (supplierId) {
         <div><label class="block text-sm font-medium mb-1">${t('email')}</label><input type="email" name="email" value="${s ? this.esc(s.email || '') : ''}" class="w-full px-3 py-2 border rounded-lg"></div>
       </div>
       <div><label class="block text-sm font-medium mb-1">${t('address')}</label><textarea name="address" class="w-full px-3 py-2 border rounded-lg">${s ? this.esc(s.address || '') : ''}</textarea></div>
+      ${!s ? `
+      <div class="border-t pt-3">
+        <p class="text-sm font-medium text-gray-700 mb-2"><i class="fas fa-truck mr-1"></i>${t('supplier_portal')} <span class="text-gray-400 font-normal">(${t('optional_field')})</span></p>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-sm font-medium mb-1">${t('supplier_login_email')}</label><input type="email" name="login_email" class="w-full px-3 py-2 border rounded-lg"></div>
+          <div><label class="block text-sm font-medium mb-1">${t('supplier_login_password')}</label><input type="password" name="password" minlength="8" class="w-full px-3 py-2 border rounded-lg"></div>
+        </div>
+      </div>` : ''}
       ${s ? `<div><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="is_active" ${s.is_active ? 'checked' : ''}> ${t('active')}</label></div>` : ''}
       <div class="flex gap-3 pt-2">
         <button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">${t('save')}</button>
