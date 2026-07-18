@@ -326,3 +326,104 @@ MSyncApp.prototype.exportWarehouseStockExcel = function () {
   }));
   this.exportToExcel(rows, this._warehouseStockName || 'Stock', `${(this._warehouseStockName || 'Stock').replace(/[^a-z0-9]/gi, '_')}_Stock.xlsx`);
 };
+
+// ---------- Manage Super Admin accounts ----------
+MSyncApp.prototype.renderManageSuperAdmins = async function () {
+  const content = document.getElementById('superAdminContent');
+  content.innerHTML = '<div class="flex items-center justify-center h-64"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-700"></div></div>';
+
+  try {
+    const admins = await this.saApi('/super-admins');
+    content.innerHTML = `
+    <div class="fade-in space-y-4">
+      <button onclick="app.renderSuperAdminOverview()" class="text-sm text-gray-500 hover:underline"><i class="fas fa-arrow-left mr-1"></i>${t('back_to_all_warehouses')}</button>
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900">${t('manage_super_admins')}</h2>
+        <button onclick="app.openAddSuperAdminModal()" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm hover:bg-gray-900"><i class="fas fa-plus mr-2"></i>${t('add_super_admin')}</button>
+      </div>
+      <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50"><tr class="text-left text-gray-500">
+            <th class="p-3">${t('full_name')}</th><th class="p-3">${t('email')}</th><th class="p-3">${t('status')}</th><th class="p-3 text-right">${t('actions')}</th>
+          </tr></thead>
+          <tbody>
+            ${admins.map(a => `
+            <tr class="transaction-row border-b border-gray-50">
+              <td class="p-3 font-medium">${this.esc(a.full_name)}</td>
+              <td class="p-3 text-gray-500">${this.esc(a.email)}</td>
+              <td class="p-3"><span class="px-2 py-0.5 rounded-full text-xs ${a.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${a.is_active ? t('active') : t('inactive')}</span></td>
+              <td class="p-3 text-right space-x-2">
+                ${a.id !== this.saUser.id ? `
+                <button onclick="app.toggleSuperAdminStatus('${a.id}', ${!a.is_active})" class="text-xs ${a.is_active ? 'text-red-600' : 'text-green-600'} hover:underline">${a.is_active ? t('deactivate') : t('activate')}</button>
+                <button onclick="app.openResetSuperAdminPasswordModal('${a.id}')" class="text-xs text-blue-600 hover:underline">${t('reset_password')}</button>` : `<span class="text-xs text-gray-400">${t('you_label')}</span>`}
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+    this._superAdminsCache = admins;
+  } catch (err) {
+    content.innerHTML = `<div class="text-center text-red-600 py-12"><i class="fas fa-exclamation-triangle text-3xl mb-3"></i><p>${err.message}</p></div>`;
+  }
+};
+
+MSyncApp.prototype.openAddSuperAdminModal = function () {
+  document.getElementById('modalContent').innerHTML = `
+  <div class="p-6">
+    <h3 class="text-lg font-bold mb-4">${t('add_super_admin')}</h3>
+    <form id="addSuperAdminForm" class="space-y-3">
+      <div><label class="block text-sm font-medium mb-1">${t('full_name')}</label><input name="full_name" required class="w-full px-3 py-2 border rounded-lg"></div>
+      <div><label class="block text-sm font-medium mb-1">${t('email')}</label><input type="email" name="email" required class="w-full px-3 py-2 border rounded-lg"></div>
+      <div><label class="block text-sm font-medium mb-1">${t('set_password')}</label><input type="password" name="password" minlength="8" required class="w-full px-3 py-2 border rounded-lg" placeholder="${t('new_password_min8')}"></div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="flex-1 bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-900">${t('create')}</button>
+        <button type="button" onclick="app.closeModal()" class="flex-1 bg-gray-100 py-2 rounded-lg hover:bg-gray-200">${t('cancel')}</button>
+      </div>
+    </form>
+  </div>`;
+  document.getElementById('modalContainer').classList.remove('hidden');
+  document.getElementById('addSuperAdminForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    try {
+      await this.saApi('/super-admins', { method: 'POST', body: data });
+      this.showToast(t('super_admin_created'), 'success');
+      this.closeModal();
+      this.renderManageSuperAdmins();
+    } catch (err) { this.showToast(err.message, 'error'); }
+  });
+};
+
+MSyncApp.prototype.toggleSuperAdminStatus = async function (id, activate) {
+  try {
+    await this.saApi(`/super-admins/${id}/status`, { method: 'PATCH', body: { is_active: activate } });
+    this.showToast(activate ? t('user_activated') : t('user_deactivated'), 'success');
+    this.renderManageSuperAdmins();
+  } catch (err) { this.showToast(err.message, 'error'); }
+};
+
+MSyncApp.prototype.openResetSuperAdminPasswordModal = function (id) {
+  document.getElementById('modalContent').innerHTML = `
+  <div class="p-6">
+    <h3 class="text-lg font-bold mb-2">${t('reset_password_for')}</h3>
+    <p class="text-sm text-gray-500 mb-4">${t('reset_password_hint')}</p>
+    <form id="resetSuperAdminPwdForm" class="space-y-3">
+      <div><label class="block text-sm font-medium mb-1">${t('new_password_min8')}</label><input type="password" name="password" minlength="8" required class="w-full px-3 py-2 border rounded-lg"></div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="flex-1 bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-900">${t('save')}</button>
+        <button type="button" onclick="app.closeModal()" class="flex-1 bg-gray-100 py-2 rounded-lg hover:bg-gray-200">${t('cancel')}</button>
+      </div>
+    </form>
+  </div>`;
+  document.getElementById('modalContainer').classList.remove('hidden');
+  document.getElementById('resetSuperAdminPwdForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    try {
+      await this.saApi(`/super-admins/${id}/reset-password`, { method: 'POST', body: data });
+      this.showToast(t('password_updated'), 'success');
+      this.closeModal();
+    } catch (err) { this.showToast(err.message, 'error'); }
+  });
+};

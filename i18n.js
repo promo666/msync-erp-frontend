@@ -380,6 +380,9 @@ const I18N = {
     full_stock_list: 'Full Stock List',
     view_full_stock: 'View Full Stock',
     view_full_stock_hint: 'See every product and its current stock level in this warehouse, searchable by name, SKU, or category.',
+    manage_super_admins: 'Manage Super Admins',
+    add_super_admin: 'Add Super Admin',
+    super_admin_created: 'Super admin account created',
   },
   ar: {
     // App
@@ -760,6 +763,9 @@ const I18N = {
     full_stock_list: 'قائمة المخزون الكاملة',
     view_full_stock: 'عرض المخزون الكامل',
     view_full_stock_hint: 'اطّلع على كل منتج ومستوى مخزونه الحالي بهذا المستودع، مع إمكانية البحث بالاسم أو رمز المنتج أو الفئة.',
+    manage_super_admins: 'إدارة المشرفين العامين',
+    add_super_admin: 'إضافة مشرف عام',
+    super_admin_created: 'تم إنشاء حساب المشرف العام',
   }
 };
 
