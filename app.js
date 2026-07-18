@@ -141,7 +141,7 @@ class MSyncApp {
       { id: 'products', icon: 'fa-boxes', label: t('nav_products'), roles: ['owner', 'admin', 'salesman'] },
       { id: 'new-sale', icon: 'fa-cash-register', label: t('nav_new_sale'), roles: ['owner', 'admin', 'salesman'] },
       { id: 'sales', icon: 'fa-receipt', label: t('nav_sales'), roles: ['owner', 'admin', 'salesman'] },
-      { id: 'targets', icon: 'fa-bullseye', label: t('nav_targets'), roles: ['owner', 'admin'] },
+      { id: 'targets', icon: 'fa-bullseye', label: t('nav_targets'), roles: ['owner', 'admin', 'salesman'] },
       { id: 'reports', icon: 'fa-chart-pie', label: t('nav_reports'), roles: ['owner', 'admin'] },
       { id: 'customers', icon: 'fa-address-book', label: t('nav_customers'), roles: ['owner', 'admin'] },
       { id: 'coupons', icon: 'fa-tags', label: t('nav_coupons'), roles: ['owner', 'admin'] },

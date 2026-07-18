@@ -37,8 +37,8 @@ MSyncApp.prototype.renderShops = async function (view) {
         <button onclick="app.exportShopsExcel()" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700"><i class="fas fa-file-excel mr-2"></i>${t('export_excel')}</button>
         ${canManage ? `
         <button onclick="app.exportCreditExcel()" class="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700"><i class="fas fa-file-excel mr-2"></i>${t('credit_report_excel')}</button>
-        <button onclick="app.exportCreditPdf()" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700"><i class="fas fa-file-pdf mr-2"></i>${t('credit_report_pdf')}</button>
-        <button onclick="app.openShopModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"><i class="fas fa-plus mr-2"></i>${t('add_shop')}</button>` : ''}
+        <button onclick="app.exportCreditPdf()" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700"><i class="fas fa-file-pdf mr-2"></i>${t('credit_report_pdf')}</button>` : ''}
+        <button onclick="app.openShopModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"><i class="fas fa-plus mr-2"></i>${t('add_shop')}</button>
       </div>
     </div>
     <input id="shopSearchInput" oninput="app.filterShopsList()" placeholder="${t('search_shops_placeholder')}" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
@@ -85,6 +85,7 @@ MSyncApp.prototype.renderShopsList = function () {
         const overdue = owes && days !== null && days > 6;
         const badgeClass = overdue ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700';
         const daysLabel = days === null ? '' : overdue ? ` · ${days - 6}${t('days_overdue_suffix')}` : ` · ${6 - days}${t('days_left_suffix')}`;
+        const canEditThis = canManage || s.created_by === this.currentUser.id;
         return `
       <div class="glass-panel rounded-xl p-5 shadow-sm">
         <div class="flex justify-between items-start">
@@ -100,7 +101,7 @@ MSyncApp.prototype.renderShopsList = function () {
           </div>
           <div class="text-right space-y-1">
             <button onclick="app.openShopQRModal('${s.id}')" class="text-purple-600 text-xs hover:underline block">${t('qr_code')}</button>
-            ${canManage ? `<button onclick="app.openShopModal('${s.id}')" class="text-blue-600 text-xs hover:underline block">${t('edit')}</button>` : ''}
+            ${canEditThis ? `<button onclick="app.openShopModal('${s.id}')" class="text-blue-600 text-xs hover:underline block">${t('edit')}</button>` : ''}
             ${canManage && owes ? `<button onclick="app.openShopPaymentModal('${s.id}')" class="text-green-600 text-xs hover:underline block">${t('record_payment')}</button>` : ''}
           </div>
         </div>
