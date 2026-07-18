@@ -110,13 +110,21 @@ MSyncApp.prototype.renderSuperAdminOverview = async function () {
           <p class="text-3xl font-bold text-orange-600 mt-1">${this.fmt(overview.combined.total_credit_outstanding)}</p>
           <p class="text-xs text-gray-400 mt-1">${overview.combined.shops_owing} ${t('shops_owing_count')}</p>
         </div>
+        <div class="glass-panel rounded-xl p-5">
+          <p class="text-sm text-gray-500">${t('total_visits_all')}</p>
+          <p class="text-3xl font-bold text-gray-900 mt-1">${overview.combined.total_visits}</p>
+        </div>
+        <div class="glass-panel rounded-xl p-5">
+          <p class="text-sm text-gray-500">${t('total_receipts_all')}</p>
+          <p class="text-3xl font-bold text-gray-900 mt-1">${overview.combined.total_receipts}</p>
+        </div>
       </div>
 
       <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
         <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">${t('warehouse_ranking')}</div>
         <table class="w-full text-sm">
           <thead class="bg-gray-50"><tr class="text-left text-gray-500">
-            <th class="p-3">#</th><th class="p-3">${t('warehouse_col')}</th><th class="p-3 text-right">${t('total_sales_label')}</th><th class="p-3 text-right">${t('sale_count_col')}</th><th class="p-3 text-right">${t('credit_owed_col')}</th><th class="p-3 text-right">${t('details_col')}</th>
+            <th class="p-3">#</th><th class="p-3">${t('warehouse_col')}</th><th class="p-3 text-right">${t('total_sales_label')}</th><th class="p-3 text-right">${t('sale_count_col')}</th><th class="p-3 text-right">${t('credit_owed_col')}</th><th class="p-3 text-right">${t('visits_col')}</th><th class="p-3 text-right">${t('receipts_col')}</th><th class="p-3 text-right">${t('details_col')}</th>
           </tr></thead>
           <tbody>
             ${overview.ranking.map((r, i) => `
@@ -126,6 +134,8 @@ MSyncApp.prototype.renderSuperAdminOverview = async function () {
               <td class="p-3 text-right font-semibold">${this.fmt(r.total_sales)}</td>
               <td class="p-3 text-right">${r.sale_count}</td>
               <td class="p-3 text-right ${r.credit_outstanding > 0 ? 'text-orange-600 font-medium' : 'text-gray-400'}">${this.fmt(r.credit_outstanding)}</td>
+              <td class="p-3 text-right">${r.visit_count}</td>
+              <td class="p-3 text-right">${r.receipt_count}</td>
               <td class="p-3 text-right"><button onclick="app.renderSuperAdminWarehouseDetail('${r.warehouse_id}')" class="text-blue-600 hover:underline text-xs">${t('view')} <i class="fas fa-arrow-right ml-1"></i></button></td>
             </tr>`).join('')}
           </tbody>
@@ -136,7 +146,7 @@ MSyncApp.prototype.renderSuperAdminOverview = async function () {
         <div class="p-4 border-b border-gray-100 font-semibold text-gray-800">${t('all_warehouses')}</div>
         <table class="w-full text-sm">
           <thead class="bg-gray-50"><tr class="text-left text-gray-500">
-            <th class="p-3">${t('name')}</th><th class="p-3">${t('status')}</th><th class="p-3 text-right">${t('users_col')}</th><th class="p-3 text-right">${t('products_col')}</th><th class="p-3 text-right">${t('shops_col')}</th><th class="p-3 text-right">${t('credit_owed_col')}</th><th class="p-3 text-right">${t('actions')}</th>
+            <th class="p-3">${t('name')}</th><th class="p-3">${t('status')}</th><th class="p-3 text-right">${t('users_col')}</th><th class="p-3 text-right">${t('products_col')}</th><th class="p-3 text-right">${t('shops_col')}</th><th class="p-3 text-right">${t('credit_owed_col')}</th><th class="p-3 text-right">${t('visits_col')}</th><th class="p-3 text-right">${t('actions')}</th>
           </tr></thead>
           <tbody>
             ${warehouses.map(w => `
@@ -147,6 +157,7 @@ MSyncApp.prototype.renderSuperAdminOverview = async function () {
               <td class="p-3 text-right">${w.stats.active_products}</td>
               <td class="p-3 text-right">${w.stats.active_shops}</td>
               <td class="p-3 text-right ${w.stats.credit_outstanding > 0 ? 'text-orange-600 font-medium' : 'text-gray-400'}">${this.fmt(w.stats.credit_outstanding)}</td>
+              <td class="p-3 text-right">${w.stats.visit_count}</td>
               <td class="p-3 text-right space-x-2">
                 <button onclick="app.renderSuperAdminWarehouseDetail('${w.id}')" class="text-blue-600 hover:underline text-xs">${t('view')}</button>
                 <button onclick="app.toggleWarehouseStatus('${w.id}', ${!w.is_active})" class="text-xs ${w.is_active ? 'text-red-600' : 'text-green-600'} hover:underline">${w.is_active ? t('deactivate') : t('activate')}</button>
@@ -181,7 +192,7 @@ MSyncApp.prototype.renderSuperAdminWarehouseDetail = async function (warehouseId
       <button onclick="app.renderSuperAdminOverview()" class="text-sm text-gray-500 hover:underline"><i class="fas fa-arrow-left mr-1"></i>${t('back_to_all_warehouses')}</button>
       <h2 class="text-xl font-bold text-gray-900">${this.esc(d.warehouse.name)}</h2>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="glass-panel rounded-xl p-5">
           <p class="text-sm text-gray-500">${t('total_sales_label')}</p>
           <p class="text-3xl font-bold text-gray-900 mt-1">${this.fmt(d.totals.total_sales)}</p>
@@ -190,6 +201,22 @@ MSyncApp.prototype.renderSuperAdminWarehouseDetail = async function (warehouseId
           <p class="text-sm text-gray-500">${t('completed_sales_label')}</p>
           <p class="text-3xl font-bold text-gray-900 mt-1">${d.totals.sale_count}</p>
         </div>
+        <div class="glass-panel rounded-xl p-5">
+          <p class="text-sm text-gray-500">${t('receipts_col')}</p>
+          <p class="text-3xl font-bold text-gray-900 mt-1">${d.totals.receipt_count}</p>
+        </div>
+        <div class="glass-panel rounded-xl p-5">
+          <p class="text-sm text-gray-500">${t('visits_col')}</p>
+          <p class="text-3xl font-bold text-gray-900 mt-1">${d.totals.visit_count}</p>
+        </div>
+      </div>
+
+      <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-gray-100 font-semibold text-gray-800 flex items-center justify-between">
+          <span>${t('full_stock_list')}</span>
+          <button onclick="app.viewWarehouseFullStock('${warehouseId}')" class="px-3 py-1.5 bg-gray-800 text-white rounded-lg text-xs hover:bg-gray-900"><i class="fas fa-boxes mr-1"></i>${t('view_full_stock')}</button>
+        </div>
+        <p class="p-4 text-sm text-gray-400">${t('view_full_stock_hint')}</p>
       </div>
 
       <div class="glass-panel rounded-xl shadow-sm overflow-hidden">
@@ -235,4 +262,67 @@ MSyncApp.prototype.renderSuperAdminWarehouseDetail = async function (warehouseId
   } catch (err) {
     content.innerHTML = `<div class="text-center text-red-600 py-12"><i class="fas fa-exclamation-triangle text-3xl mb-3"></i><p>${err.message}</p></div>`;
   }
+};
+
+// ---------- Full stock viewer for a single warehouse (Super Admin only) ----------
+MSyncApp.prototype.viewWarehouseFullStock = async function (warehouseId) {
+  document.getElementById('modalContent').innerHTML = '<div class="p-10 flex items-center justify-center"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-700"></div></div>';
+  document.getElementById('modalContainer').classList.remove('hidden');
+
+  try {
+    const data = await this.saApi(`/warehouses/${warehouseId}/products`);
+    this._warehouseStockCache = data.products;
+    this._warehouseStockName = data.warehouse.name;
+    this.renderWarehouseFullStockModal();
+  } catch (err) {
+    document.getElementById('modalContent').innerHTML = `<div class="p-6 text-center text-red-600">${err.message}</div>`;
+  }
+};
+
+MSyncApp.prototype.renderWarehouseFullStockModal = function () {
+  document.getElementById('modalContent').innerHTML = `
+  <div class="p-6">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-lg font-bold">${t('full_stock_list')} — ${this.esc(this._warehouseStockName)}</h3>
+      <button onclick="app.exportWarehouseStockExcel()" class="px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700"><i class="fas fa-file-excel mr-1"></i>${t('export_excel')}</button>
+    </div>
+    <input id="warehouseStockSearch" oninput="app.filterWarehouseStockModal()" placeholder="${t('search_products')}" class="w-full px-3 py-2 border rounded-lg mb-3 text-sm">
+    <div class="max-h-[60vh] overflow-y-auto border rounded-lg">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 sticky top-0"><tr class="text-left text-gray-500">
+          <th class="p-2">${t('sku')}</th><th class="p-2">${t('name')}</th><th class="p-2">${t('category')}</th><th class="p-2 text-right">${t('price')}</th><th class="p-2 text-right">${t('cost')}</th><th class="p-2 text-right">${t('stock')}</th>
+        </tr></thead>
+        <tbody id="warehouseStockTableBody"></tbody>
+      </table>
+    </div>
+    <button type="button" onclick="app.closeModal()" class="w-full mt-4 bg-gray-100 py-2 rounded-lg hover:bg-gray-200">${t('close')}</button>
+  </div>`;
+  this.filterWarehouseStockModal();
+};
+
+MSyncApp.prototype.filterWarehouseStockModal = function () {
+  const q = (document.getElementById('warehouseStockSearch')?.value || '').toLowerCase();
+  const rows = (this._warehouseStockCache || [])
+    .filter(p => p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q))
+    .map(p => {
+      const low = p.current_stock <= p.low_stock_threshold;
+      return `<tr class="border-b border-gray-50">
+        <td class="p-2 font-mono text-xs text-gray-500">${this.esc(p.sku)}</td>
+        <td class="p-2">${this.esc(p.name)}</td>
+        <td class="p-2 text-gray-500">${this.esc(p.category || '-')}</td>
+        <td class="p-2 text-right">${this.fmt(p.unit_price)}</td>
+        <td class="p-2 text-right text-gray-500">${this.fmt(p.cost_price || 0)}</td>
+        <td class="p-2 text-right"><span class="px-2 py-0.5 rounded-full text-xs font-medium ${low ? 'stock-low' : 'stock-ok'}">${p.current_stock}</span></td>
+      </tr>`;
+    }).join('');
+  document.getElementById('warehouseStockTableBody').innerHTML = rows || `<tr><td colspan="6" class="p-4 text-center text-gray-400">${t('no_products_found')}</td></tr>`;
+};
+
+MSyncApp.prototype.exportWarehouseStockExcel = function () {
+  const rows = (this._warehouseStockCache || []).map(p => ({
+    SKU: p.sku, Barcode: p.barcode || '', Name: p.name, Category: p.category || '',
+    'Unit Price': p.unit_price, 'Cost Price': p.cost_price || 0, 'Current Stock': p.current_stock,
+    'Low Stock Threshold': p.low_stock_threshold, Active: p.is_active ? 'Yes' : 'No'
+  }));
+  this.exportToExcel(rows, this._warehouseStockName || 'Stock', `${(this._warehouseStockName || 'Stock').replace(/[^a-z0-9]/gi, '_')}_Stock.xlsx`);
 };

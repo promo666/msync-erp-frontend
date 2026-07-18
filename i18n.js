@@ -373,6 +373,13 @@ const I18N = {
     enabled: 'Enabled',
     not_enabled: 'Not Enabled',
     optional_field: 'optional',
+    total_visits_all: 'Total Visits (all warehouses)',
+    total_receipts_all: 'Total Receipts (all warehouses)',
+    visits_col: 'Visits',
+    receipts_col: 'Receipts',
+    full_stock_list: 'Full Stock List',
+    view_full_stock: 'View Full Stock',
+    view_full_stock_hint: 'See every product and its current stock level in this warehouse, searchable by name, SKU, or category.',
   },
   ar: {
     // App
@@ -746,6 +753,13 @@ const I18N = {
     enabled: 'مفعّلة',
     not_enabled: 'غير مفعّلة',
     optional_field: 'اختياري',
+    total_visits_all: 'إجمالي الزيارات (كل المستودعات)',
+    total_receipts_all: 'إجمالي الفواتير (كل المستودعات)',
+    visits_col: 'الزيارات',
+    receipts_col: 'الفواتير',
+    full_stock_list: 'قائمة المخزون الكاملة',
+    view_full_stock: 'عرض المخزون الكامل',
+    view_full_stock_hint: 'اطّلع على كل منتج ومستوى مخزونه الحالي بهذا المستودع، مع إمكانية البحث بالاسم أو رمز المنتج أو الفئة.',
   }
 };
 
